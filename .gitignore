@@ -1,0 +1,35 @@
+# Dependencies and generated output
+node_modules/
+dist/
+.venv/
+graphify-out/
+
+# Local environment and editor state
+.env
+.env.*
+!.env.example
+.vscode/
+
+# School data and exported/backup files
+*.accdb
+*.mdb
+*.xls
+*.xlsx
+*.xlsm
+*.bak
+*.json.bak
+exported_data.json
+MEB_Sorumluluk_Yedek_*.json
+e-okul*
+Personel_Listesi*
+
+# Local analysis, extraction, and generated documentation
+*_strings.txt
+vba_code*.txt
+CLAUDE_PROJECT_LIBRARY.md
+SISTEM_DOKUMANTASYON.md
+build_claude_library.cjs
+generate_initial_data.cjs
+inspect_xlsm.ps1
+export_all.ps1
+query_ogrenci.ps1
