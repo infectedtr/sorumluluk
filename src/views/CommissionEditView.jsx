@@ -3,6 +3,7 @@ import { useApp } from "../context/AppContext";
 import { exportToExcel } from "../utils/excelParser";
 import { isAssignableTeacher } from "../utils/teacherEligibility";
 import { getExamObservers } from "../utils/examRoles";
+import { EXAM_TYPES, normalizeExamType } from "../utils/examTypes";
 import {
   ClipboardEdit, Save, Search, MapPin, UserPlus, UserMinus,
   FileSpreadsheet, Sparkles, CheckCircle2, AlertTriangle, Eye, EyeOff,
@@ -85,43 +86,135 @@ function TeacherSelect({ value, onChange, teachers, dersAdi, exclude = [], label
 }
 
 // Tek sınav satırı düzenleme kartı
-function ExamRow({ exam, teachers, rooms, onSave, showBranshHint }) {
+function ExamRow({ exam, teachers, rooms, hours, courses, onSave, showBranshHint }) {
+  const [tarih, setTarih] = useState(exam.tarih || "");
+  const [saat, setSaat] = useState(exam.saat || hours[0] || "10:00");
+  const [seviye, setSeviye] = useState(Number(exam.seviye) || 9);
+  const [ders, setDers] = useState(exam.ders || "");
+  const [sinavTuru, setSinavTuru] = useState(normalizeExamType(exam.sinavTuru));
+  const [ogrenciSayisi, setOgrenciSayisi] = useState(exam.ogrenciSayisi || 0);
   const [uye1, setUye1] = useState(exam.uye1 || "");
   const [uye2, setUye2] = useState(exam.uye2 || "");
   const [uye3, setUye3] = useState(exam.uye3 || "");
   const [gozcu, setGozcu] = useState(exam.gozcu || "");
   const [salon, setSalon] = useState(exam.salon || "");
   const [extraGozcular, setExtraGozcular] = useState(exam.extraGozcular || []);
+  const [aciklama, setAciklama] = useState(exam.aciklama || "");
   const [dirty, setDirty] = useState(false);
   const [saved, setSaved] = useState(false);
   const m = (fn) => { fn(); setDirty(true); setSaved(false); };
   const komisyonTam = uye1 && uye2;
-  const u1match = uye1 ? branshUygunMu(teachers.find((t) => t.name === uye1)?.branch, exam.ders) : null;
-  const u2match = uye2 ? branshUygunMu(teachers.find((t) => t.name === uye2)?.branch, exam.ders) : null;
+  const u1match = uye1 ? branshUygunMu(teachers.find((t) => t.name === uye1)?.branch, ders) : null;
+  const u2match = uye2 ? branshUygunMu(teachers.find((t) => t.name === uye2)?.branch, ders) : null;
+  const handleCourseChange = (selectedCourseName) => {
+    m(() => setDers(selectedCourseName));
+    const matched = courses.find(
+      (course) =>
+        course.name === selectedCourseName &&
+        Number(course.seviye) === Number(seviye) &&
+        normalizeExamType(course.sinavTuru) === sinavTuru
+    ) || courses.find(
+      (course) => course.name === selectedCourseName && Number(course.seviye) === Number(seviye)
+    );
+    if (matched) {
+      m(() => {
+        setSinavTuru(normalizeExamType(matched.sinavTuru));
+        setOgrenciSayisi(matched.ogrenciSayisi || 0);
+      });
+    }
+  };
+  const handleExamTypeChange = (selectedType) => {
+    m(() => setSinavTuru(selectedType));
+    const matched = courses.find(
+      (course) =>
+        course.name === ders &&
+        Number(course.seviye) === Number(seviye) &&
+        normalizeExamType(course.sinavTuru) === selectedType
+    );
+    if (matched) m(() => setOgrenciSayisi(matched.ogrenciSayisi || 0));
+  };
   const handleSave = () => {
-    onSave(exam.id, { uye1, uye2, uye3, gozcu, salon, extraGozcular: extraGozcular.filter(Boolean) });
+    if (!tarih || !saat || !ders.trim()) return;
+    onSave(exam.id, {
+      tarih,
+      saat,
+      seviye: Number(seviye),
+      ders: ders.trim().toLocaleUpperCase("tr-TR"),
+      sinavTuru,
+      ogrenciSayisi: Number(ogrenciSayisi) || 0,
+      uye1,
+      uye2,
+      uye3,
+      gozcu,
+      salon,
+      extraGozcular: extraGozcular.filter(Boolean),
+      aciklama
+    });
     setDirty(false); setSaved(true); setTimeout(() => setSaved(false), 2500);
   };
-  const allEx = [uye1, uye2, uye3, gozcu, ...extraGozcular].filter(Boolean);
   return (
     <div className={`rounded-2xl border p-4 space-y-3 transition-all ${dirty ? "border-indigo-300 dark:border-indigo-700 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-sm" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"}`}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-bold text-slate-900 dark:text-white">{exam.ders}</span>
-          <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px]">{exam.seviye}. Sinif</span>
-          {exam.tarih && <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px]">{exam.tarih} · {exam.saat}</span>}
-          <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px]">{exam.ogrenciSayisi || 0} ogrenci</span>
+          <span className="text-xs font-bold text-slate-900 dark:text-white">{ders || "Ders belirtilmedi"}</span>
+          <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px]">{seviye}. Sinif</span>
+          {tarih && <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px]">{tarih} · {saat}</span>}
+          <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px]">{ogrenciSayisi || 0} ogrenci</span>
           {komisyonTam
             ? <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 text-[10px] font-semibold"><CheckCircle2 className="w-3 h-3" />Komisyon Tam</span>
             : <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 text-[10px] font-semibold"><AlertTriangle className="w-3 h-3" />Eksik Uye</span>}
         </div>
         <div className="flex items-center gap-2">
           {saved && <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">✓ Kaydedildi</span>}
-          <button onClick={handleSave} disabled={!dirty} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 text-white text-xs font-semibold transition-all active:scale-95">
+          <button onClick={handleSave} disabled={!dirty || !tarih || !saat || !ders.trim()} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-400 text-white text-xs font-semibold transition-all active:scale-95">
             <Save className="w-3.5 h-3.5" />Kaydet
           </button>
         </div>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <label className="flex flex-col gap-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+          Sınav Tarihi
+          <input type="date" value={tarih} onChange={(e) => m(() => setTarih(e.target.value))}
+            className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white" />
+        </label>
+        <label className="flex flex-col gap-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+          Sınav Saati
+          <select value={saat} onChange={(e) => m(() => setSaat(e.target.value))}
+            className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white">
+            {!hours.includes(saat) && <option value={saat}>{saat}</option>}
+            {hours.map((hour) => <option key={hour} value={hour}>{hour}</option>)}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+          Sınıf Seviyesi
+          <select value={seviye} onChange={(e) => m(() => setSeviye(Number(e.target.value)))}
+            className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white">
+            {[9, 10, 11, 12].map((level) => <option key={level} value={level}>{level}. Sinif</option>)}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+          Sınav Türü
+          <select value={sinavTuru} onChange={(e) => handleExamTypeChange(e.target.value)}
+            className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white">
+            {EXAM_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400 sm:col-span-2 lg:col-span-3">
+          Ders Adı
+          <input type="text" list={`exam-course-options-${exam.id}`} value={ders}
+            onChange={(e) => handleCourseChange(e.target.value)}
+            className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white uppercase" />
+          <datalist id={`exam-course-options-${exam.id}`}>
+            {courses.map((course) => <option key={course.id} value={course.name} />)}
+          </datalist>
+        </label>
+        <label className="flex flex-col gap-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+          Öğrenci Sayısı
+          <input type="number" min="0" value={ogrenciSayisi}
+            onChange={(e) => m(() => setOgrenciSayisi(parseInt(e.target.value, 10) || 0))}
+            className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white" />
+        </label>
       </div>
       {/* Salon */}
       <div className="flex items-center gap-2">
@@ -171,13 +264,18 @@ function ExamRow({ exam, teachers, rooms, onSave, showBranshHint }) {
       <button onClick={() => m(() => setExtraGozcular((prev) => [...prev,""]))} className="flex items-center gap-1.5 text-[11px] text-indigo-600 dark:text-indigo-400 hover:underline">
         <UserPlus className="w-3.5 h-3.5" />Ek Gozcu Ogretmen Ekle
       </button>
+      <label className="flex flex-col gap-1 text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+        Özel Açıklama / Not
+        <input type="text" value={aciklama} onChange={(e) => m(() => setAciklama(e.target.value))}
+          className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white" />
+      </label>
     </div>
   );
 }
 
 // Ana sayfa
 export default function CommissionEditView() {
-  const { schedule, teachers, rooms, schoolInfo, updateExam, runAutoAssignment } = useApp();
+  const { schedule, teachers, rooms, hours, courses, schoolInfo, updateExam, runAutoAssignment } = useApp();
   const [search, setSearch] = useState("");
   const [filterSeviye, setFilterSeviye] = useState("all");
   const [filterDate, setFilterDate] = useState("");
@@ -264,7 +362,7 @@ export default function CommissionEditView() {
       ) : (
         <div className="space-y-3">
           {filtered.map((exam)=>(
-            <ExamRow key={exam.id} exam={exam} teachers={activeTeachers} rooms={rooms} onSave={updateExam} showBranshHint={showBranshHint} />
+            <ExamRow key={exam.id} exam={exam} teachers={activeTeachers} rooms={rooms} hours={hours} courses={courses} onSave={updateExam} showBranshHint={showBranshHint} />
           ))}
         </div>
       )}
