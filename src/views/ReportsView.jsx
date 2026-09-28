@@ -859,8 +859,7 @@ export default function ReportsView() {
                     <th className="border border-black p-1 text-center">Öğrenci Sayısı</th>
                     <th className="border border-black p-1">Sınav Salonu</th>
                     <th className="border border-black p-1">Komisyon Üyeleri</th>
-                    <th className="border border-black p-1">Gözcü</th>
-                    <th className="border border-black p-1">Diğer Gözcü(ler)</th>
+                    <th className="border border-black p-1">Gözcüler</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -880,16 +879,13 @@ export default function ReportsView() {
                         {[exam.uye1, exam.uye2].filter(Boolean).join(', ') || '-'}
                       </td>
                       <td className="border border-black p-1">
-                        {getExamObservers(exam)[0] || '-'}
-                      </td>
-                      <td className="border border-black p-1">
-                        {getExamObservers(exam).slice(1).join(', ') || '-'}
+                        {getExamObservers(exam).join(', ') || '-'}
                       </td>
                     </tr>
                   ))}
                   {schedule.length === 0 && (
                     <tr>
-                      <td className="border border-black p-2 text-center" colSpan={11}>
+                      <td className="border border-black p-2 text-center" colSpan={10}>
                         Sınav programında gösterilecek oturum bulunmamaktadır.
                       </td>
                     </tr>
