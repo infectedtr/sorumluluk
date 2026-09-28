@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { normalizeExamType } from '../utils/examTypes';
-import { getExamObservers } from '../utils/examRoles';
+import { getExamObservers, getExamStaff } from '../utils/examRoles';
 import {
   FileText,
   Printer,
@@ -58,7 +58,7 @@ export default function ReportsView() {
     {
       id: 'ogretmen_teblig',
       title: '4. Öğretmen Sınav Görev Tebliğ Belgesi',
-      desc: 'Öğretmenlere görevlendirildikleri sınavların tebliği (Tekil veya Toplu)',
+      desc: 'Öğretmenlere sınav görevleri ve aynı oturumdaki komisyon/gözcü isimlerinin tebliği (Tekil veya Toplu)',
       icon: Users
     },
     {
@@ -565,7 +565,7 @@ export default function ReportsView() {
                 <div className="text-xs space-y-2">
                   <p><strong>Sayın:</strong> {t.name} ({t.branch})</p>
                   <p className="text-justify leading-relaxed">
-                    {schoolInfo.ogretimYili} Eğitim-Öğretim Yılı {schoolInfo.donem} Dönemi Sorumluluk Sınavlarında aşağıda belirtilen gün, saat ve derslerde sınav komisyon üyesi / gözcü olarak görevlendirilmiş bulunmaktasınız. Sınav evraklarının sınav saatinden 30 dakika önce idareden teslim alınarak sınavın mevzuat hükümlerine uygun yürütülmesi hususunda;
+                    {schoolInfo.ogretimYili} Eğitim-Öğretim Yılı {schoolInfo.donem} Dönemi Sorumluluk Sınavlarında aşağıda belirtilen gün, saat ve derslerde sınav komisyon üyesi / gözcü olarak görevlendirilmiş bulunmaktasınız. Her oturum için birlikte görev yapacağınız diğer komisyon üyeleri ve gözcüler de belirtilmiştir. Sınav evraklarının sınav saatinden 30 dakika önce idareden teslim alınarak sınavın mevzuat hükümlerine uygun yürütülmesi hususunda;
                     <br />
                     Bilgilerinizi ve gereğini rica ederim.
                   </p>
@@ -582,20 +582,28 @@ export default function ReportsView() {
                       <th className="border border-black p-1 w-16 text-center">Seviye</th>
                       <th className="border border-black p-1 w-24">Sınav Yeri</th>
                       <th className="border border-black p-1 w-24 text-center">Görevi</th>
+                      <th className="border border-black p-1">Diğer Komisyon Üyeleri / Gözcüler</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {t.assignments.map((asg, aIdx) => (
-                      <tr key={aIdx}>
-                        <td className="border border-black p-1 text-center">{aIdx + 1}</td>
-                        <td className="border border-black p-1 text-center font-medium">{asg.tarih}</td>
-                        <td className="border border-black p-1 text-center font-bold">{asg.saat}</td>
-                        <td className="border border-black p-1 font-bold">{asg.ders}</td>
-                        <td className="border border-black p-1 text-center">{asg.seviye}. Sınıf</td>
-                        <td className="border border-black p-1">{asg.salon}</td>
-                        <td className="border border-black p-1 text-center font-semibold">{asg.role}</td>
-                      </tr>
-                    ))}
+                    {t.assignments.map((asg, aIdx) => {
+                      const exam = schedule.find((item) => String(item.id) === String(asg.examId));
+                      const otherStaff = exam
+                        ? getExamStaff(exam).filter((name) => name !== t.name).join(', ')
+                        : '';
+                      return (
+                        <tr key={aIdx}>
+                          <td className="border border-black p-1 text-center">{aIdx + 1}</td>
+                          <td className="border border-black p-1 text-center font-medium">{asg.tarih}</td>
+                          <td className="border border-black p-1 text-center font-bold">{asg.saat}</td>
+                          <td className="border border-black p-1 font-bold">{asg.ders}</td>
+                          <td className="border border-black p-1 text-center">{asg.seviye}. Sınıf</td>
+                          <td className="border border-black p-1">{asg.salon}</td>
+                          <td className="border border-black p-1 text-center font-semibold">{asg.role}</td>
+                          <td className="border border-black p-1">{otherStaff || '-'}</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
 
