@@ -23,7 +23,7 @@ Create a production build with `npm run build`; preview it locally with `npm run
 
 ## Exam assignment settings
 
-- Use **Ders - Branş Eşleştirme** to choose one or more teacher branches for each course. A custom mapping takes precedence during automatic commission assignment; clearing it restores the built-in course/branch suggestions.
+- Use **Ders - Branş Eşleştirme** to choose one or more teacher branches for each course. A custom mapping takes precedence during automatic commission assignment and also drives teacher ordering and branch-match hints in manual commission editing; clearing it restores the built-in course/branch suggestions.
 - Set **Gözcü Görevlendirme Öğrenci Eşiği** under school and exam settings. An observer is automatically assigned when an exam's student count is greater than this value (default: 30).
 - Select **Yazılı**, **Sözlü**, or **Uygulama** for each exam session. Course sync creates both written and oral sessions for Turkish Language and Literature and foreign-language courses; the schedule warns when their written and oral sessions fall on the same day.
 - Course/branch mappings are included in JSON backups.

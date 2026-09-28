@@ -1,7 +1,7 @@
 import { normalizeExamType, requiresWrittenAndOralExams } from './examTypes.js';
 import { isAssignableTeacher } from './teacherEligibility.js';
 import { getExamObservers } from './examRoles.js';
-import { normalizeCourseKey, teacherMatchesCourseBranch } from './courseBranchMapping.js';
+import { normalizeCourseKey, teacherMatchesCourse } from './courseBranchMapping.js';
 
 /**
  * Checks for conflicts in the schedule
@@ -247,51 +247,6 @@ export function autoAssignCommission(
   const activeTeachers = teachers.filter((teacher) => isAssignableTeacher(teacher, principalName));
   if (activeTeachers.length === 0) return schedule;
 
-  // ── Yardımcı: bir öğretmenin branşının derse uygun olup olmadığını kontrol et ──
-  function branshUygunMu(teacherBranch, dersAdi) {
-    if (!teacherBranch || !dersAdi) return false;
-    const tb = teacherBranch.toLocaleUpperCase('tr-TR');
-    const dn = dersAdi.toLocaleUpperCase('tr-TR');
-    // Doğrudan eşleşme
-    if (dn.includes(tb) || tb.includes(dn)) return true;
-    // Anahtar kelime eşleşmeleri (MEB müfredatı)
-    const MAP = [
-      { ders: ['TÜRK DİLİ','TÜRKÇE','EDEBİYAT','DİL VE ANLATIM'], brans: ['TÜRK DİLİ VE EDEBİYATI','TÜRKÇE'] },
-      { ders: ['MATEMATİK','TEMEL MATEMATİK'], brans: ['MATEMATİK'] },
-      { ders: ['FİZİK'], brans: ['FİZİK'] },
-      { ders: ['KİMYA'], brans: ['KİMYA'] },
-      { ders: ['BİYOLOJİ'], brans: ['BİYOLOJİ'] },
-      { ders: ['TARİH','İNKILAP','ÇAĞDAŞ TÜRK'], brans: ['TARİH'] },
-      { ders: ['COĞRAFYA'], brans: ['COĞRAFYA'] },
-      { ders: ['FELSEFE','PSİKOLOJİ','SOSYOLOJİ','MANTIK'], brans: ['FELSEFE'] },
-      { ders: ['DİN KÜLTÜRÜ','AHLAK BİLGİSİ','KUR\'AN','HZ MUHAMMED','İSLAM TARİHİ'], brans: ['DİN KÜLTÜRÜ VE AHLAK BİLGİSİ','İMAM HATİP'] },
-      { ders: ['YABANCI DİL','İNGİLİZCE','ALMANCA','FRANSIZCA','İSPANYOLCA','ARAPÇA'], brans: ['İNGİLİZCE','ALMANCA','FRANSIZCA','YABANCI DİL','ARAPÇA'] },
-      { ders: ['BEDEN EĞİTİMİ','SPOR'], brans: ['BEDEN EĞİTİMİ'] },
-      { ders: ['MÜZİK'], brans: ['MÜZİK'] },
-      { ders: ['GÖRSEL SANATLAR','RESİM'], brans: ['GÖRSEL SANATLAR','RESİM'] },
-      { ders: ['BİLİŞİM','BİLGİSAYAR','PROGRAMLAMA','WEB TASARIM','VERİ TABANI','YAZILIM'], brans: ['BİLİŞİM TEKNOLOJİLERİ','BİLGİSAYAR'] },
-      { ders: ['ELEKTRİK','ELEKTRONİK','OTOMASYON','PLC','ENERJİ'], brans: ['ELEKTRİK-ELEKTRONİK TEKNOLOJİSİ','ELEKTRİK'] },
-      { ders: ['MAKİNE','MOTOR','OTOMOTİV','MOTORLU ARAÇ','KAYNAKÇILIK','CNC','TALAŞ'], brans: ['MAKİNE TEKNOLOJİSİ','MOTORLU ARAÇLAR TEKNOLOJİSİ','METAL TEKNOLOJİSİ'] },
-      { ders: ['METAL','ÇELİK','DÖKÜM'], brans: ['METAL TEKNOLOJİSİ'] },
-      { ders: ['MOBİLYA','İÇ MEKAN','AHŞAP','MARANGOZ'], brans: ['MOBİLYA VE İÇ MEKAN TASARIMI'] },
-      { ders: ['İNŞAAT','YAPI','MİMARLIK','HARITA'], brans: ['İNŞAAT TEKNOLOJİSİ','YAPI TEKNOLOJİSİ'] },
-      { ders: ['TEKSTİL','KONFEKSİYON','GİYİM','DOKUMA'], brans: ['TEKSTİL TEKNOLOJİSİ','GİYİM ÜRETİM TEKNOLOJİSİ'] },
-      { ders: ['GIDA','MUTFAK','YİYECEK','PASTANE','AŞÇILIK'], brans: ['GIDA TEKNOLOJİSİ','AŞÇILIK'] },
-      { ders: ['SAĞLIK','HEMŞİRELİK','İLK YARDIM','ECZANE'], brans: ['SAĞLIK HİZMETLERİ','HEMŞİRELİK'] },
-      { ders: ['ÇOCUK GELİŞİMİ','ÇOCUK BAKIMI'], brans: ['ÇOCUK GELİŞİMİ VE EĞİTİMİ'] },
-      { ders: ['MUHASEBE','FİNANS','PAZARLAMA','BANKACILIK','TİCARET'], brans: ['MUHASEBE VE FİNANSMAN','MUHASEBE'] },
-      { ders: ['TURİZM','OTELCİLİK','SEYAHAT','REHBER'], brans: ['TURİZM VE OTEL İŞLETMECİLİĞİ'] },
-      { ders: ['GRAFİK','MEDYA','TASARIM','FOTOĞRAF','SİNEMA'], brans: ['GRAFİK VE FOTOĞRAF','MEDYA VE İLETİŞİM'] },
-    ];
-    for (const entry of MAP) {
-      const dersMatch = entry.ders.some((d) => dn.includes(d));
-      if (!dersMatch) continue;
-      const bransMatch = entry.brans.some((b) => tb.includes(b) || b.includes(tb));
-      if (bransMatch) return true;
-    }
-    return false;
-  }
-
   function normalizeBranchText(value) {
     return String(value || '')
       .toLocaleUpperCase('tr-TR')
@@ -381,10 +336,9 @@ export function autoAssignCommission(
     const mappingKey = normalizeCourseKey(ders);
     const hasCourseBranchMapping = Array.isArray(courseBranchMappings?.[mappingKey])
       && courseBranchMappings[mappingKey].length > 0;
-    const branshUygun = available.filter((teacher) => {
-      const explicitMatch = teacherMatchesCourseBranch(teacher.branch, ders, courseBranchMappings);
-      return explicitMatch === null ? branshUygunMu(teacher.branch, ders) : explicitMatch;
-    });
+    const branshUygun = available.filter((teacher) =>
+      teacherMatchesCourse(teacher.branch, ders, courseBranchMappings)
+    );
     if (branshUygun.length === 0 && !hasCourseBranchMapping && alan && !isCultureCourse(ders)) {
       const fieldTeachers = available.filter((t) => teacherMatchesField(t.branch, alan));
       if (fieldTeachers.length > 0) {

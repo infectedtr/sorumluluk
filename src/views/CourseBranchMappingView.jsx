@@ -51,7 +51,7 @@ export default function CourseBranchMappingView() {
           Ders - Öğretmen Branş Eşleştirme
         </h1>
         <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
-          Derslere uygun bir veya daha fazla öğretmen branşı seçin. Bu eşleşmeler otomatik komisyon dağıtımında öncelikli kullanılır.
+          Derslere uygun bir veya daha fazla öğretmen branşı seçin. Eşleşmeler otomatik atamada kullanılır; manuel komisyon ekranında da uygun öğretmenleri öne çıkarıp branş uyumunu gösterir.
         </p>
       </header>
 

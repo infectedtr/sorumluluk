@@ -4,59 +4,18 @@ import { exportToExcel } from "../utils/excelParser";
 import { isAssignableTeacher } from "../utils/teacherEligibility";
 import { getExamObservers } from "../utils/examRoles";
 import { EXAM_TYPES, normalizeExamType } from "../utils/examTypes";
+import { teacherMatchesCourse } from "../utils/courseBranchMapping";
 import {
   ClipboardEdit, Save, Search, MapPin, UserPlus, UserMinus,
   FileSpreadsheet, Sparkles, CheckCircle2, AlertTriangle, Eye, EyeOff,
 } from "lucide-react";
 
-// Branş-ders uyum kontrolü (scheduler.js ile aynı inline mantık)
-function branshUygunMu(teacherBranch, dersAdi) {
-  if (!teacherBranch || !dersAdi) return false;
-  const tb = teacherBranch.toLocaleUpperCase("tr-TR");
-  const dn = dersAdi.toLocaleUpperCase("tr-TR");
-  if (dn.includes(tb) || tb.includes(dn)) return true;
-  const MAP = [
-    { ders: ["TURK DILI","TURKCE","EDEBIYAT","DIL VE ANLATIM"], brans: ["TURK DILI VE EDEBIYATI","TURKCE"] },
-    { ders: ["MATEMATIK","TEMEL MATEMATIK"], brans: ["MATEMATIK"] },
-    { ders: ["FIZIK"], brans: ["FIZIK"] },
-    { ders: ["KIMYA"], brans: ["KIMYA"] },
-    { ders: ["BIYOLOJI"], brans: ["BIYOLOJI"] },
-    { ders: ["TARIH","INKILAP","CAGDAS TURK"], brans: ["TARIH"] },
-    { ders: ["COGRAFYA"], brans: ["COGRAFYA"] },
-    { ders: ["FELSEFE","PSIKOLOJI","SOSYOLOJI","MANTIK"], brans: ["FELSEFE"] },
-    { ders: ["DIN KULTURU","AHLAK BILGISI"], brans: ["DIN KULTURU VE AHLAK BILGISI","IMAM HATIP"] },
-    { ders: ["YABANCI DIL","INGILIZCE","ALMANCA","FRANSIZCA","ARAPCA"], brans: ["INGILIZCE","ALMANCA","FRANSIZCA","YABANCI DIL","ARAPCA"] },
-    { ders: ["BEDEN EGITIMI","SPOR"], brans: ["BEDEN EGITIMI"] },
-    { ders: ["MUZIK"], brans: ["MUZIK"] },
-    { ders: ["GORSEL SANATLAR","RESIM"], brans: ["GORSEL SANATLAR","RESIM"] },
-    { ders: ["BILISIM","BILGISAYAR","PROGRAMLAMA","WEB TASARIM","YAZILIM"], brans: ["BILISIM TEKNOLOJILERI","BILGISAYAR"] },
-    { ders: ["ELEKTRIK","ELEKTRONIK","OTOMASYON","PLC","ENERJI"], brans: ["ELEKTRIK-ELEKTRONIK TEKNOLOJISI","ELEKTRIK"] },
-    { ders: ["MAKINE","MOTOR","OTOMOTIV","MOTORLU ARAC","KAYNAKCILIK","CNC"], brans: ["MAKINE TEKNOLOJISI","MOTORLU ARACLAR TEKNOLOJISI","METAL TEKNOLOJISI"] },
-    { ders: ["METAL","CELIK","DOKUM"], brans: ["METAL TEKNOLOJISI"] },
-    { ders: ["MOBILYA","IC MEKAN","AHSAP","MARANGOZ"], brans: ["MOBILYA VE IC MEKAN TASARIMI"] },
-    { ders: ["GIDA","MUTFAK","YIYECEK","PASTANE","ASCILIK"], brans: ["GIDA TEKNOLOJISI","ASCILIK"] },
-    { ders: ["SAGLIK","HEMSIRELIK","ILK YARDIM"], brans: ["SAGLIK HIZMETLERI","HEMSIRELIK"] },
-    { ders: ["MUHASEBE","FINANS","PAZARLAMA","BANKACILIK","TICARET"], brans: ["MUHASEBE VE FINANSMAN","MUHASEBE"] },
-    { ders: ["TURIZM","OTELCILIK","SEYAHAT"], brans: ["TURIZM VE OTEL ISLETMECILIGI"] },
-    { ders: ["GRAFIK","MEDYA","TASARIM","FOTOGRAF"], brans: ["GRAFIK VE FOTOGRAF","MEDYA VE ILETISIM"] },
-  ];
-  // Normalize both strings (remove Turkish chars)
-  const norm = (s) => s.replace(/[İIŞŞÇÇĞĞÜÜÖÖ]/g,"").replace(/[işçğüö]/gi,"");
-  const tbN = norm(tb); const dnN = norm(dn);
-  for (const entry of MAP) {
-    if (entry.ders.some((d) => dnN.includes(norm(d)))) {
-      if (entry.brans.some((b) => tbN.includes(norm(b)) || norm(b).includes(tbN))) return true;
-    }
-  }
-  return false;
-}
-
 // Teacher Select Dropdown — branşa uygun olanları üstte gösterir
-function TeacherSelect({ value, onChange, teachers, dersAdi, exclude = [], label }) {
-  const uygun = teachers.filter((t) => branshUygunMu(t.branch, dersAdi) && !exclude.includes(t.name));
-  const diger = teachers.filter((t) => !branshUygunMu(t.branch, dersAdi) && !exclude.includes(t.name));
+function TeacherSelect({ value, onChange, teachers, dersAdi, courseBranchMappings, exclude = [], label }) {
+  const uygun = teachers.filter((t) => teacherMatchesCourse(t.branch, dersAdi, courseBranchMappings) && !exclude.includes(t.name));
+  const diger = teachers.filter((t) => !teacherMatchesCourse(t.branch, dersAdi, courseBranchMappings) && !exclude.includes(t.name));
   const selectedTeacher = teachers.find((t) => t.name === value);
-  const isMatch = value ? branshUygunMu(selectedTeacher?.branch, dersAdi) : null;
+  const isMatch = value ? teacherMatchesCourse(selectedTeacher?.branch, dersAdi, courseBranchMappings) : null;
   return (
     <div className="flex flex-col gap-1">
       {label && <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">{label}</label>}
@@ -86,7 +45,7 @@ function TeacherSelect({ value, onChange, teachers, dersAdi, exclude = [], label
 }
 
 // Tek sınav satırı düzenleme kartı
-function ExamRow({ exam, teachers, rooms, hours, courses, onSave, showBranshHint }) {
+function ExamRow({ exam, teachers, rooms, hours, courses, courseBranchMappings, onSave, showBranshHint }) {
   const [tarih, setTarih] = useState(exam.tarih || "");
   const [saat, setSaat] = useState(exam.saat || hours[0] || "10:00");
   const [seviye, setSeviye] = useState(Number(exam.seviye) || 9);
@@ -104,8 +63,8 @@ function ExamRow({ exam, teachers, rooms, hours, courses, onSave, showBranshHint
   const [saved, setSaved] = useState(false);
   const m = (fn) => { fn(); setDirty(true); setSaved(false); };
   const komisyonTam = uye1 && uye2;
-  const u1match = uye1 ? branshUygunMu(teachers.find((t) => t.name === uye1)?.branch, ders) : null;
-  const u2match = uye2 ? branshUygunMu(teachers.find((t) => t.name === uye2)?.branch, ders) : null;
+  const u1match = uye1 ? teacherMatchesCourse(teachers.find((t) => t.name === uye1)?.branch, ders, courseBranchMappings) : null;
+  const u2match = uye2 ? teacherMatchesCourse(teachers.find((t) => t.name === uye2)?.branch, ders, courseBranchMappings) : null;
   const handleCourseChange = (selectedCourseName) => {
     m(() => setDers(selectedCourseName));
     const matched = courses.find(
@@ -240,21 +199,21 @@ function ExamRow({ exam, teachers, rooms, hours, courses, onSave, showBranshHint
       {/* Komisyon grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div>
-          <TeacherSelect label="1. Komisyon Uyesi *" value={uye1} onChange={(v) => m(() => setUye1(v))} teachers={teachers} dersAdi={exam.ders} exclude={[uye2,uye3,gozcu,...extraGozcular].filter(Boolean)} />
+          <TeacherSelect label="1. Komisyon Uyesi *" value={uye1} onChange={(v) => m(() => setUye1(v))} teachers={teachers} dersAdi={ders} courseBranchMappings={courseBranchMappings} exclude={[uye2,uye3,gozcu,...extraGozcular].filter(Boolean)} />
           {showBranshHint && uye1 && <p className={`text-[9px] mt-0.5 ${u1match ? "text-emerald-600" : "text-amber-600"}`}>{u1match ? "✓ Bransa uygun" : "⚠ Brans farkli"}</p>}
         </div>
         <div>
-          <TeacherSelect label="2. Komisyon Uyesi *" value={uye2} onChange={(v) => m(() => setUye2(v))} teachers={teachers} dersAdi={exam.ders} exclude={[uye1,uye3,gozcu,...extraGozcular].filter(Boolean)} />
+          <TeacherSelect label="2. Komisyon Uyesi *" value={uye2} onChange={(v) => m(() => setUye2(v))} teachers={teachers} dersAdi={ders} courseBranchMappings={courseBranchMappings} exclude={[uye1,uye3,gozcu,...extraGozcular].filter(Boolean)} />
           {showBranshHint && uye2 && <p className={`text-[9px] mt-0.5 ${u2match ? "text-emerald-600" : "text-amber-600"}`}>{u2match ? "✓ Bransa uygun" : "⚠ Brans farkli"}</p>}
         </div>
-        <TeacherSelect label="Gozcu" value={uye3} onChange={(v) => m(() => setUye3(v))} teachers={teachers} dersAdi={exam.ders} exclude={[uye1,uye2,gozcu,...extraGozcular].filter(Boolean)} />
-        <TeacherSelect label="Diger Gozcu" value={gozcu} onChange={(v) => m(() => setGozcu(v))} teachers={teachers} dersAdi={exam.ders} exclude={[uye1,uye2,uye3,...extraGozcular].filter(Boolean)} />
+        <TeacherSelect label="Gozcu" value={uye3} onChange={(v) => m(() => setUye3(v))} teachers={teachers} dersAdi={ders} courseBranchMappings={courseBranchMappings} exclude={[uye1,uye2,gozcu,...extraGozcular].filter(Boolean)} />
+        <TeacherSelect label="Diger Gozcu" value={gozcu} onChange={(v) => m(() => setGozcu(v))} teachers={teachers} dersAdi={ders} courseBranchMappings={courseBranchMappings} exclude={[uye1,uye2,uye3,...extraGozcular].filter(Boolean)} />
       </div>
       {/* Ek gözcüler */}
       {extraGozcular.map((g, idx) => (
         <div key={idx} className="flex items-end gap-2">
           <div className="flex-1">
-            <TeacherSelect label={`Ek Gozcu ${idx + 1}`} value={g} onChange={(v) => m(() => setExtraGozcular((prev) => prev.map((x, i) => i===idx ? v : x)))} teachers={teachers} dersAdi={exam.ders} exclude={[uye1,uye2,uye3,gozcu,...extraGozcular.filter((_,i)=>i!==idx)].filter(Boolean)} />
+            <TeacherSelect label={`Ek Gozcu ${idx + 1}`} value={g} onChange={(v) => m(() => setExtraGozcular((prev) => prev.map((x, i) => i===idx ? v : x)))} teachers={teachers} dersAdi={ders} courseBranchMappings={courseBranchMappings} exclude={[uye1,uye2,uye3,gozcu,...extraGozcular.filter((_,i)=>i!==idx)].filter(Boolean)} />
           </div>
           <button onClick={() => m(() => setExtraGozcular((prev) => prev.filter((_,i)=>i!==idx)))} className="mb-0.5 p-1.5 rounded-lg text-rose-500 hover:bg-rose-100 dark:hover:bg-rose-950/40">
             <UserMinus className="w-4 h-4" />
@@ -275,7 +234,7 @@ function ExamRow({ exam, teachers, rooms, hours, courses, onSave, showBranshHint
 
 // Ana sayfa
 export default function CommissionEditView() {
-  const { schedule, teachers, rooms, hours, courses, schoolInfo, updateExam, runAutoAssignment } = useApp();
+  const { schedule, teachers, rooms, hours, courses, schoolInfo, courseBranchMappings, updateExam, runAutoAssignment } = useApp();
   const [search, setSearch] = useState("");
   const [filterSeviye, setFilterSeviye] = useState("all");
   const [filterDate, setFilterDate] = useState("");
@@ -362,7 +321,7 @@ export default function CommissionEditView() {
       ) : (
         <div className="space-y-3">
           {filtered.map((exam)=>(
-            <ExamRow key={exam.id} exam={exam} teachers={activeTeachers} rooms={rooms} hours={hours} courses={courses} onSave={updateExam} showBranshHint={showBranshHint} />
+            <ExamRow key={exam.id} exam={exam} teachers={activeTeachers} rooms={rooms} hours={hours} courses={courses} courseBranchMappings={courseBranchMappings} onSave={updateExam} showBranshHint={showBranshHint} />
           ))}
         </div>
       )}
