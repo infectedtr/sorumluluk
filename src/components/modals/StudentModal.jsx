@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, GraduationCap } from 'lucide-react';
 import { EXAM_TYPES, normalizeExamType } from '../../utils/examTypes';
+import { animateModalOpen } from '../../utils/animeEffects';
 
 export default function StudentModal({ isOpen, onClose, onSave, student }) {
   const [sinif, setSinif] = useState('');
@@ -9,6 +10,15 @@ export default function StudentModal({ isOpen, onClose, onSave, student }) {
   const [ders, setDers] = useState('');
   const [seviye, setSeviye] = useState(9);
   const [sinavTuru, setSinavTuru] = useState(EXAM_TYPES[0]);
+
+  const backdropRef = useRef(null);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen && modalRef.current && backdropRef.current) {
+      animateModalOpen(modalRef.current, backdropRef.current);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (student) {
@@ -46,24 +56,35 @@ export default function StudentModal({ isOpen, onClose, onSave, student }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden">
-        
+    <div
+      ref={backdropRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="student-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+    >
+      <div
+        ref={modalRef}
+        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden"
+      >
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <GraduationCap className="w-5 h-5 text-rose-600 dark:text-rose-400" />
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">
+            <GraduationCap className="w-5 h-5 text-rose-600 dark:text-rose-400" aria-hidden="true" />
+            <h2 id="student-modal-title" className="font-bold text-slate-900 dark:text-white text-base">
               {student ? 'Öğrenci Sorumluluk Kaydını Düzenle' : 'Yeni Öğrenci Sorumluluk Kaydı'}
-            </h3>
+            </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 transition-colors"
+            aria-label="Pencereyi kapat"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
+
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">

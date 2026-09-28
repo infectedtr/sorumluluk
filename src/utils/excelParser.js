@@ -504,7 +504,7 @@ export function parseTeacherRows(rows, principalName = '') {
     branch = branch.trim() || 'Belirtilmemiş';
 
     teachers.push({
-      id: Date.now() + Math.random(),
+      id: `t_${Date.now()}_${teachers.length}_${Math.random().toString(36).slice(2, 9)}`,
       name,
       branch,
       position: colL,

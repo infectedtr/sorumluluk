@@ -169,7 +169,7 @@ export default function DutyDistributionView() {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filteredStats.map((t, idx) => (
                 <tr
-                  key={t.id}
+                  key={`duty_${t.id || t.name}_${idx}`}
                   className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
                 >
                   <td className="p-3.5 text-center font-medium text-slate-400">

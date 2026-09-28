@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { exportToExcel } from '../utils/excelParser';
 import { getExamObservers } from '../utils/examRoles';
@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import ExamModal from '../components/modals/ExamModal';
 import ConfirmModal from '../components/modals/ConfirmModal';
+import { staggerEntrance } from '../utils/animeEffects';
 
 export default function ScheduleView() {
   const {
@@ -50,6 +51,8 @@ export default function ScheduleView() {
 
   // Multi-selection state
   const [selectedIds, setSelectedIds] = useState([]);
+  const tbodyRef = useRef(null);
+
 
   // Confirm Modal state
   const [confirmState, setConfirmState] = useState({
@@ -229,8 +232,15 @@ export default function ScheduleView() {
     filteredSchedule.length > 0 &&
     filteredSchedule.every((e) => selectedIds.includes(String(e.id)));
 
+  useEffect(() => {
+    if (tbodyRef.current) {
+      staggerEntrance(tbodyRef.current.children, { delay: 40, staggerDelay: 20 });
+    }
+  }, [filteredSchedule.length, filterDate, filterSeviye, filterSalon]);
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
+
       
       {/* Header & Actions */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -328,13 +338,14 @@ export default function ScheduleView() {
       <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Search */}
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" aria-hidden="true" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Ders veya Öğretmen ara..."
-            className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+            placeholder="Ders veya öğretmen ara…"
+            aria-label="Sınav veya öğretmen ara"
+            className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
           />
         </div>
 
@@ -343,7 +354,8 @@ export default function ScheduleView() {
           <select
             value={filterDate}
             onChange={(e) => setFilterDate(e.target.value)}
-            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+            aria-label="Tarihe göre filtrele"
+            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 tabular-nums"
           >
             <option value="">Tüm Tarihler ({uniqueDates.length} Gün)</option>
             {uniqueDates.map((d) => (
@@ -359,7 +371,8 @@ export default function ScheduleView() {
           <select
             value={filterSeviye}
             onChange={(e) => setFilterSeviye(e.target.value)}
-            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+            aria-label="Sınıf seviyesine göre filtrele"
+            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
           >
             <option value="all">Tüm Seviyeler</option>
             <option value="9">9. Sınıf</option>
@@ -374,7 +387,8 @@ export default function ScheduleView() {
           <select
             value={filterSalon}
             onChange={(e) => setFilterSalon(e.target.value)}
-            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+            aria-label="Sınav salonuna göre filtrele"
+            className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
           >
             <option value="all">Tüm Sınav Salonları</option>
             {rooms.map((r) => (
@@ -397,12 +411,12 @@ export default function ScheduleView() {
                     type="checkbox"
                     checked={isAllFilteredSelected}
                     onChange={toggleSelectAll}
+                    aria-label="Tüm listelenen sınavları seç veya seçimi kaldır"
                     className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500 border-slate-300 cursor-pointer"
-                    title="Tümünü Seç / Seçimi Kaldır"
                   />
                 </th>
                 <th className="p-3.5 w-10 text-center">#</th>
-                <th className="p-3.5">Tarih & Saat</th>
+                <th className="p-3.5">Tarih &amp; Saat</th>
                 <th className="p-3.5">Seviye</th>
                 <th className="p-3.5">Ders Adı</th>
                 <th className="p-3.5">Sınav Türü</th>
@@ -414,7 +428,8 @@ export default function ScheduleView() {
                 <th className="p-3.5 text-right">İşlemler</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <tbody ref={tbodyRef} className="divide-y divide-slate-100 dark:divide-slate-800">
+
               {filteredSchedule.map((exam, idx) => {
                 const warnings = getExamWarnings(exam);
                 const hasWarning = warnings.length > 0;
@@ -543,19 +558,24 @@ export default function ScheduleView() {
                     <td className="p-3.5 text-right">
                       <div className="flex items-center justify-end space-x-1">
                         <button
+                          type="button"
                           onClick={() => handleEdit(exam)}
-                          className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 transition-colors"
                           title="Düzenle"
+                          aria-label={`${exam.ders} sınav oturumunu düzenle`}
                         >
-                          <Edit2 className="w-4 h-4" />
+                          <Edit2 className="w-4 h-4" aria-hidden="true" />
                         </button>
                         <button
+                          type="button"
                           onClick={() => triggerSingleDelete(exam)}
-                          className="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+                          className="p-1.5 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 transition-colors"
                           title="Oturumu Sil"
+                          aria-label={`${exam.ders} sınav oturumunu sil`}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-4 h-4" aria-hidden="true" />
                         </button>
+
                       </div>
                     </td>
                   </tr>

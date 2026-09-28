@@ -7,14 +7,13 @@ import {
   Database,
   Download,
   Upload,
-  RotateCcw,
   Trash2,
   FileSpreadsheet,
   ShieldCheck,
   AlertTriangle,
-  RefreshCw,
-  Sparkles
+  RefreshCw
 } from 'lucide-react';
+
 import ConfirmModal from '../components/modals/ConfirmModal';
 
 export default function BackupView() {
@@ -155,31 +154,8 @@ export default function BackupView() {
           </div>
         </div>
 
-        {/* Claude AI Library Card */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-purple-200 dark:border-purple-900/50 p-6 shadow-sm space-y-4 md:col-span-2 bg-gradient-to-r from-purple-50/50 to-indigo-50/30 dark:from-purple-950/20 dark:to-indigo-950/20">
-          <div className="flex items-center space-x-3 text-purple-600 dark:text-purple-400">
-            <Sparkles className="w-6 h-6" />
-            <h2 className="font-bold text-slate-900 dark:text-white text-base">
-              Claude AI İçin Tam Proje Kütüphane Dosyası (.md)
-            </h2>
-          </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-3xl">
-            Tüm program mimarisini, veri modellerini, algoritmaları (MEB Madde 58 komisyon dağıtımı, e-Okul Makro2, Sütun I/J aktarımı ve 12. sınıf kısaltmaları) ve projenin eksiksiz kaynak kodlarını içeren tek parça kütüphane dosyasıdır. Claude Projects veya Claude web arayüzüne dosya olarak yükleyebilirsiniz.
-          </p>
-
-          <div className="pt-1 flex flex-wrap gap-3">
-            <a
-              href="/CLAUDE_PROJECT_LIBRARY.md"
-              download="CLAUDE_PROJECT_LIBRARY.md"
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold shadow-md shadow-purple-600/20 active:scale-95 transition-all"
-            >
-              <Download className="w-4 h-4" />
-              <span>Claude Proje Kütüphanesini İndir (CLAUDE_PROJECT_LIBRARY.md)</span>
-            </a>
-          </div>
-        </div>
-
       </div>
+
 
       {/* Program Data Reset Center */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-5">
@@ -360,46 +336,23 @@ export default function BackupView() {
         </div>
 
         {/* Factory Reset Actions */}
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-xs text-slate-500">
-            <strong>Orijinal Access Veritabanı:</strong> İlk yüklenen 35 öğretmen, 103 öğrenci ve 22 ders verilerine geri dönebilirsiniz.
-          </div>
-
-          <div className="flex items-center space-x-2 w-full sm:w-auto">
-            <button
-              onClick={() => {
-                setConfirmState({
-                  isOpen: true,
-                  title: 'Orijinal Access Verilerine Dön',
-                  message: 'Tüm mevcut veriler silinip orijinal Access dosyasındaki ilk haline getirilecek. Onaylıyor musunuz?',
-                  confirmText: 'Orijinal Haline Sıfırla',
-                  confirmStyle: 'warning',
-                  onConfirm: () => context.handleResetToAccess()
-                });
-              }}
-              className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold transition-all"
-            >
-              <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
-              <span>Orijinal Access Haline Dön</span>
-            </button>
-
-            <button
-              onClick={() => {
-                setConfirmState({
-                  isOpen: true,
-                  title: 'Sistemi Tamamen Sıfırla',
-                  message: 'DİKKAT: Öğretmenler, öğrenciler, dersler ve sınav programı dahil TÜM VERİLER silinecektir! Bu işlem geri alınamaz. Onaylıyor musunuz?',
-                  confirmText: 'Tüm Sistemi Temizle',
-                  confirmStyle: 'danger',
-                  onConfirm: () => context.clearEntireSystem()
-                });
-              }}
-              className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-md shadow-rose-600/20 transition-all"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Sistemi Tamamen Sıfırla</span>
-            </button>
-          </div>
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+          <button
+            onClick={() => {
+              setConfirmState({
+                isOpen: true,
+                title: 'Sistemi Tamamen Sıfırla',
+                message: 'DİKKAT: Öğretmenler, öğrenciler, dersler ve sınav programı dahil TÜM VERİLER silinecektir! Bu işlem geri alınamaz. Onaylıyor musunuz?',
+                confirmText: 'Tüm Sistemi Temizle',
+                confirmStyle: 'danger',
+                onConfirm: () => context.clearEntireSystem()
+              });
+            }}
+            className="flex items-center justify-center space-x-1.5 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold shadow-md shadow-rose-600/20 transition-all"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Sistemi Tamamen Sıfırla</span>
+          </button>
         </div>
       </div>
 

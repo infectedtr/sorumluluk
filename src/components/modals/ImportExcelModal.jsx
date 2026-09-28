@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useApp } from '../../context/AppContext';
 import { parseEOkulExcel, parsePastedStudentText } from '../../utils/excelParser';
 import { X, UploadCloud, FileSpreadsheet, Clipboard, CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
+import { animateModalOpen } from '../../utils/animeEffects';
 
 export default function ImportExcelModal({ isOpen, onClose }) {
   const { bulkAddStudents, clearAllStudents, syncCoursesFromStudents } = useApp();
@@ -16,7 +17,17 @@ export default function ImportExcelModal({ isOpen, onClose }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+  const backdropRef = useRef(null);
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen && modalRef.current && backdropRef.current) {
+      animateModalOpen(modalRef.current, backdropRef.current);
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
+
 
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
@@ -71,24 +82,35 @@ export default function ImportExcelModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-y-auto">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden my-8">
-        
+    <div
+      ref={backdropRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="import-excel-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto"
+    >
+      <div
+        ref={modalRef}
+        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden my-8"
+      >
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <FileSpreadsheet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <h3 className="font-bold text-slate-900 dark:text-white text-base">
+            <FileSpreadsheet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+            <h2 id="import-excel-modal-title" className="font-bold text-slate-900 dark:text-white text-base">
               e-Okul Sorumluluk Listesi İçe Aktarma (Makro2 Algoritmalı)
-            </h3>
+            </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 transition-colors"
+            aria-label="Pencereyi kapat"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
+
 
         {/* Tab selection */}
         <div className="px-6 pt-4 flex space-x-2 border-b border-slate-100 dark:border-slate-800">

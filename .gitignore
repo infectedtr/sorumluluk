@@ -33,3 +33,11 @@ generate_initial_data.cjs
 inspect_xlsm.ps1
 export_all.ps1
 query_ogrenci.ps1
+
+# sablon/: reference/school documents used only during development
+# (layout references, olur/tutanak samples, rendered screenshots).
+# Only the two PDFs imported at build time by ReportsView.jsx are tracked.
+sablon/rendered/
+sablon/*.pdf
+!sablon/konusmadinleme.pdf
+!sablon/yabancınot.pdf

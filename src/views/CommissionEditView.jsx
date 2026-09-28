@@ -1,4 +1,4 @@
-﻿import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useApp } from "../context/AppContext";
 import { exportToExcel } from "../utils/excelParser";
 import { isAssignableTeacher } from "../utils/teacherEligibility";
@@ -30,13 +30,27 @@ function TeacherSelect({ value, onChange, teachers, dersAdi, courseBranchMapping
       >
         <option value="">— Seçiniz —</option>
         {uygun.length > 0 && (
-          <optgroup label={`✓ Bransla Uygun (${uygun.length})`}>
-            {uygun.map((t) => <option key={t.id} value={t.name}>{t.name} · {t.branch}</option>)}
+          <optgroup label={`✓ Branşla Uygun (${uygun.length})`}>
+            {uygun
+              .slice()
+              .sort((a, b) => a.name.localeCompare(b.name, 'tr-TR'))
+              .map((t, idx) => (
+                <option key={`uygun_${t.id || t.name}_${idx}`} value={t.name}>
+                  {t.name} · {t.branch}
+                </option>
+              ))}
           </optgroup>
         )}
         {diger.length > 0 && (
-          <optgroup label={`Diger Ogretmenler (${diger.length})`}>
-            {diger.map((t) => <option key={t.id} value={t.name}>{t.name} · {t.branch}</option>)}
+          <optgroup label={`Diğer Öğretmenler (${diger.length})`}>
+            {diger
+              .slice()
+              .sort((a, b) => a.name.localeCompare(b.name, 'tr-TR'))
+              .map((t, idx) => (
+                <option key={`diger_${t.id || t.name}_${idx}`} value={t.name}>
+                  {t.name} · {t.branch}
+                </option>
+              ))}
           </optgroup>
         )}
       </select>
@@ -45,7 +59,8 @@ function TeacherSelect({ value, onChange, teachers, dersAdi, courseBranchMapping
 }
 
 // Tek sınav satırı düzenleme kartı
-function ExamRow({ exam, teachers, rooms, hours, courses, courseBranchMappings, onSave, showBranshHint }) {
+function ExamRow({ exam, colorIndex, teachers, rooms, hours, courses, courseBranchMappings, onSave, showBranshHint }) {
+  const colorHue = (colorIndex * 137.508) % 360;
   const [tarih, setTarih] = useState(exam.tarih || "");
   const [saat, setSaat] = useState(exam.saat || hours[0] || "10:00");
   const [seviye, setSeviye] = useState(Number(exam.seviye) || 9);
@@ -112,7 +127,10 @@ function ExamRow({ exam, teachers, rooms, hours, courses, courseBranchMappings, 
     setDirty(false); setSaved(true); setTimeout(() => setSaved(false), 2500);
   };
   return (
-    <div className={`rounded-2xl border p-4 space-y-3 transition-all ${dirty ? "border-indigo-300 dark:border-indigo-700 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-sm" : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"}`}>
+    <div
+      className={`rounded-2xl border p-4 space-y-3 transition-all ${dirty ? "border-indigo-300 dark:border-indigo-700 bg-indigo-50/50 dark:bg-indigo-950/20 shadow-sm" : "exam-card-color"}`}
+      style={dirty ? undefined : { "--exam-card-hue": colorHue }}
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-wrap">
@@ -320,8 +338,8 @@ export default function CommissionEditView() {
         </div>
       ) : (
         <div className="space-y-3">
-          {filtered.map((exam)=>(
-            <ExamRow key={exam.id} exam={exam} teachers={activeTeachers} rooms={rooms} hours={hours} courses={courses} courseBranchMappings={courseBranchMappings} onSave={updateExam} showBranshHint={showBranshHint} />
+          {filtered.map((exam, index)=>(
+            <ExamRow key={exam.id} exam={exam} colorIndex={index} teachers={activeTeachers} rooms={rooms} hours={hours} courses={courses} courseBranchMappings={courseBranchMappings} onSave={updateExam} showBranshHint={showBranshHint} />
           ))}
         </div>
       )}

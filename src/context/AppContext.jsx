@@ -18,10 +18,20 @@ export function AppProvider({ children }) {
     const raw = loadStoredData();
     const schoolInfo = raw.schoolInfo || {};
     const storedTeachers = raw.teachers || [];
-    const sanitizedTeachers = storedTeachers.map((teacher) => ({
-      ...teacher,
-      active: isAssignableTeacher(teacher, schoolInfo.okulMuduru)
-    }));
+    const seenIds = new Set();
+    const sanitizedTeachers = storedTeachers.map((teacher, idx) => {
+      let id = teacher.id;
+      if (!id || seenIds.has(String(id))) {
+        id = `t_${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 9)}`;
+      }
+      seenIds.add(String(id));
+      return {
+        ...teacher,
+        id,
+        branch: (teacher.branch || 'Genel').trim(),
+        active: isAssignableTeacher(teacher, schoolInfo.okulMuduru)
+      };
+    });
     const sanitizedStudents = (raw.students || [])
       .filter((s) => s && s.ders && !isHeaderOrFooterLabel(s.ders))
       .map((s) => ({
@@ -68,6 +78,72 @@ export function AppProvider({ children }) {
     }
   }, [darkMode]);
 
+  const DEFAULT_MENU_ORDER = [
+    'dashboard',
+    'schedule',
+    'teachers',
+    'students',
+    'courses',
+    'course-branches',
+    'duties',
+    'commission',
+    'reports',
+    'settings',
+    'backup'
+  ];
+
+  const [sidebarReorderEnabled, setSidebarReorderEnabledState] = useState(() => {
+    try {
+      return localStorage.getItem('sidebar_reorder_enabled') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const setSidebarReorderEnabled = (val) => {
+    setSidebarReorderEnabledState(val);
+    try {
+      localStorage.setItem('sidebar_reorder_enabled', String(val));
+    } catch {
+      // ignore
+    }
+  };
+
+  const [sidebarOrder, setSidebarOrderState] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sidebar_menu_order');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const valid = parsed.filter((id) => DEFAULT_MENU_ORDER.includes(id));
+          const missing = DEFAULT_MENU_ORDER.filter((id) => !valid.includes(id));
+          return [...valid, ...missing];
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return DEFAULT_MENU_ORDER;
+  });
+
+  const setSidebarOrder = (newOrder) => {
+    setSidebarOrderState(newOrder);
+    try {
+      localStorage.setItem('sidebar_menu_order', JSON.stringify(newOrder));
+    } catch {
+      // ignore
+    }
+  };
+
+  const resetSidebarOrder = () => {
+    setSidebarOrderState(DEFAULT_MENU_ORDER);
+    try {
+      localStorage.removeItem('sidebar_menu_order');
+    } catch {
+      // ignore
+    }
+  };
+
   const showToast = (message, type = 'success') => {
     setToastMessage({ message, type });
     setTimeout(() => {
@@ -97,13 +173,15 @@ export function AppProvider({ children }) {
   // TEACHER HANDLERS
   // ==========================================
   const addTeacher = (teacher) => {
+    const newId = `t_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
     setData((prev) => ({
       ...prev,
       teachers: [
         ...prev.teachers,
         {
           ...teacher,
-          id: Date.now(),
+          id: newId,
+          branch: (teacher.branch || 'Genel').trim(),
           active: isAssignableTeacher(teacher, prev.schoolInfo.okulMuduru)
         }
       ]
@@ -115,7 +193,11 @@ export function AppProvider({ children }) {
     setData((prev) => {
       const teachers = prev.teachers.map((teacher) => {
         if (String(teacher.id) !== String(id)) return teacher;
-        const updated = { ...teacher, ...teacherData };
+        const updated = {
+          ...teacher,
+          ...teacherData,
+          branch: (teacherData.branch !== undefined ? teacherData.branch : teacher.branch || 'Genel').trim()
+        };
         return { ...updated, active: isAssignableTeacher(updated, prev.schoolInfo.okulMuduru) };
       });
       return {
@@ -158,13 +240,20 @@ export function AppProvider({ children }) {
       const teachersByName = new Map(
         prev.teachers.map((teacher) => [teacher.name.toLocaleUpperCase('tr-TR'), teacher])
       );
-      newTeachers.forEach((teacher) => {
+      const seenIds = new Set(prev.teachers.map((t) => String(t.id)));
+      newTeachers.forEach((teacher, idx) => {
         const key = teacher.name.toLocaleUpperCase('tr-TR');
         const existing = teachersByName.get(key);
+        let id = existing ? existing.id : teacher.id;
+        if (!id || (!existing && seenIds.has(String(id)))) {
+          id = `t_${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 9)}`;
+        }
+        seenIds.add(String(id));
         const merged = {
           ...existing,
           ...teacher,
-          id: existing?.id ?? teacher.id ?? Date.now() + Math.random(),
+          id,
+          branch: (teacher.branch || existing?.branch || 'Genel').trim(),
           active:
             Boolean(teacher.active) &&
             !isAdministratorPosition(teacher.position) &&
@@ -542,6 +631,12 @@ export function AppProvider({ children }) {
         setDarkMode,
         toastMessage,
         showToast,
+        sidebarReorderEnabled,
+        setSidebarReorderEnabled,
+        sidebarOrder,
+        setSidebarOrder,
+        resetSidebarOrder,
+        DEFAULT_MENU_ORDER,
         conflicts,
         teacherStats,
         updateSchoolInfo,

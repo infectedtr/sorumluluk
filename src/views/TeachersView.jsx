@@ -91,17 +91,23 @@ export default function TeachersView() {
   });
 
   // Extract unique branches
-  const uniqueBranches = Array.from(new Set(teachers.map((t) => t.branch).filter(Boolean))).sort();
+  const uniqueBranches = Array.from(
+    new Set(teachers.map((t) => (t.branch || '').trim()).filter(Boolean))
+  ).sort((a, b) => a.localeCompare(b, 'tr-TR'));
 
   // Filtered teachers
   const filteredTeachers = teachers.filter((t) => {
     if (search) {
-      const q = search.toLocaleLowerCase('tr-TR');
+      const q = search.trim().toLocaleLowerCase('tr-TR');
       const inName = (t.name || '').toLocaleLowerCase('tr-TR').includes(q);
       const inBranch = (t.branch || '').toLocaleLowerCase('tr-TR').includes(q);
       if (!inName && !inBranch) return false;
     }
-    if (filterBranch !== 'all' && t.branch !== filterBranch) return false;
+    if (filterBranch !== 'all') {
+      const teacherBranch = (t.branch || '').trim().toLocaleLowerCase('tr-TR');
+      const targetBranch = filterBranch.trim().toLocaleLowerCase('tr-TR');
+      if (teacherBranch !== targetBranch) return false;
+    }
     return true;
   });
 
@@ -147,9 +153,9 @@ export default function TeachersView() {
 
         if (name) {
           newTeachers.push({
-            id: Date.now() + Math.random(),
+            id: `t_${Date.now()}_${newTeachers.length}_${Math.random().toString(36).slice(2, 9)}`,
             name: name.toLocaleUpperCase('tr-TR'),
-            branch: branch,
+            branch: branch.trim(),
             active: true,
             notes: ''
           });
@@ -442,7 +448,7 @@ export default function TeachersView() {
 
                 return (
                   <tr
-                    key={teacher.id}
+                    key={`teacher_${teacher.id || idx}_${teacher.name}`}
                     className={`hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors ${
                       isSelected ? 'bg-rose-50/70 dark:bg-rose-950/30' : ''
                     }`}

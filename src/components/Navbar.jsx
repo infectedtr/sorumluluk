@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   School,
@@ -6,10 +6,9 @@ import {
   Sun,
   AlertTriangle,
   Printer,
-  Calendar,
-  Sparkles,
-  RotateCcw
+  Sparkles
 } from 'lucide-react';
+import Status3DOrb from './3d/Status3DOrb';
 
 export default function Navbar() {
   const {
@@ -21,82 +20,159 @@ export default function Navbar() {
     runAutoAssignment
   } = useApp();
 
+  const logoRef = useRef(null);
+
+  const totalConflicts =
+    conflicts.teacherConflicts.length +
+    conflicts.roomConflicts.length +
+    conflicts.studentConflicts.length +
+    conflicts.warnings.length;
+
+  const hasIssues = conflicts.hasErrors || conflicts.hasWarnings;
+
+  // Subtle logo glow animation on mount
+  useEffect(() => {
+    const el = logoRef.current;
+    if (!el) return;
+    el.style.animation = 'floatY 5s ease-in-out infinite';
+  }, []);
+
   return (
-    <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors no-print">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        
-        {/* Brand & School Title */}
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 via-red-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-red-500/20">
-            <School className="w-5 h-5" />
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-slate-900 dark:text-white tracking-tight text-base sm:text-lg">
-                MEB Sorumluluk Sınavları Sistemi
-              </span>
-              <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300 border border-red-200 dark:border-red-900/50">
-                {schoolInfo.donem || 'ŞUBAT'} DÖNEMİ
-              </span>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-md">
-              {schoolInfo.okulAdi} • {schoolInfo.ogretimYili}
-            </p>
-          </div>
-        </div>
+    <header className="sticky top-0 z-30 no-print" style={{ willChange: 'transform' }}>
+      {/* Premium gradient border bottom */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-px"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(244,63,94,0.5), rgba(251,191,36,0.4), transparent)'
+        }}
+        aria-hidden="true"
+      />
+      <div className="bg-white/92 dark:bg-slate-950/92 backdrop-blur-xl border-b border-white/20 dark:border-slate-800/60 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
 
-        {/* Right Action Buttons */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
-          
-          {/* Conflict Alert Indicator */}
-          {conflicts.hasErrors || conflicts.hasWarnings ? (
-            <button
-              onClick={() => setActiveTab('schedule')}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-xs font-medium hover:bg-amber-500/20 transition-all animate-pulse"
-              title="Çakışma tespit edildi! Çözmek için tıklayın"
+          {/* Brand & School Title */}
+          <div className="flex items-center space-x-3">
+            <div
+              ref={logoRef}
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-lg shadow-red-500/30 animate-glow-pulse"
+              aria-hidden="true"
+              style={{
+                background: 'linear-gradient(135deg, #f43f5e, #dc2626, #f59e0b)',
+                boxShadow: '0 0 16px rgba(244,63,94,0.4), inset 0 1px 0 rgba(255,255,255,0.25)'
+              }}
             >
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
-              <span className="hidden sm:inline">
-                {conflicts.teacherConflicts.length + conflicts.roomConflicts.length + conflicts.studentConflicts.length + conflicts.warnings.length} Çakışma / Uyarı
-              </span>
-            </button>
-          ) : (
-            <div className="hidden lg:flex items-center space-x-1 text-xs text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/40">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              <span>Çakışma Yok</span>
+              <School className="w-5 h-5 drop-shadow" />
             </div>
-          )}
+            <div className="min-w-0">
+              <div className="flex items-center space-x-2">
+                <span className="font-extrabold text-slate-900 dark:text-white tracking-tight text-base sm:text-lg truncate">
+                  MEB Sorumluluk Sınavları
+                </span>
+                <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold tracking-wide"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(244,63,94,0.12), rgba(251,191,36,0.12))',
+                    border: '1px solid rgba(244,63,94,0.25)',
+                    color: '#be123c'
+                  }}
+                >
+                  {schoolInfo.donem || 'ŞUBAT'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-sm leading-none mt-0.5">
+                {schoolInfo.okulAdi}&nbsp;•&nbsp;{schoolInfo.ogretimYili}
+              </p>
+            </div>
+          </div>
 
-          {/* Quick Auto-Assign Button */}
-          <button
-            onClick={runAutoAssignment}
-            className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-medium border border-indigo-200 dark:border-indigo-800/50 transition-all"
-            title="Öğretmenlere sınav görevlerini dengeli ve branşa göre otomatik dağıt"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-            <span>Otomatik Dağıt</span>
-          </button>
+          {/* Right Action Buttons */}
+          <div className="flex items-center space-x-1.5 sm:space-x-2">
 
-          {/* Print Quick Access */}
-          <button
-            onClick={() => setActiveTab('reports')}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-medium transition-all"
-            title="Resmi MEB Raporları ve Baskı Merkezi"
-          >
-            <Printer className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-            <span className="hidden md:inline">Raporlar & Yazdır</span>
-          </button>
+            {/* 3D Dynamic Status Indicator */}
+            <div className="hidden lg:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/40 backdrop-blur-sm">
+              <Status3DOrb hasIssues={hasIssues} count={totalConflicts} />
+              <span className="text-[11px] font-semibold">
+                {hasIssues ? (
+                  <span className="text-amber-600 dark:text-amber-400">{totalConflicts}&nbsp;Uyarı</span>
+                ) : (
+                  <span className="text-emerald-600 dark:text-emerald-400">Sorunsuz</span>
+                )}
+              </span>
+            </div>
 
-          {/* Dark / Light Toggle */}
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            title={darkMode ? 'Açık Mod' : 'Karanlık Mod'}
-          >
-            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
+            {/* Conflict Alert */}
+            {hasIssues && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('schedule')}
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 active:scale-95"
+                style={{
+                  background: 'rgba(245,158,11,0.1)',
+                  border: '1px solid rgba(245,158,11,0.3)',
+                  color: '#d97706'
+                }}
+                title="Çakışma tespit edildi! Çözmek için tıklayın"
+                aria-label={`${totalConflicts} çakışma ve uyarı var, takvimi aç`}
+              >
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-500 animate-pulse" aria-hidden="true" />
+                <span className="hidden sm:inline">{totalConflicts}&nbsp;Çakışma</span>
+              </button>
+            )}
+
+            {/* Quick Auto-Assign Button */}
+            <button
+              type="button"
+              onClick={runAutoAssignment}
+              className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
+              style={{
+                background: 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1))',
+                border: '1px solid rgba(99,102,241,0.25)',
+                color: '#6366f1'
+              }}
+              title="Öğretmenlere sınav görevlerini dengeli ve branşa göre otomatik dağıt"
+              aria-label="Görevleri otomatik dağıt"
+            >
+              <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Otomatik Dağıt</span>
+            </button>
+
+            {/* Print Quick Access */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('reports')}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-100/80 hover:bg-slate-200 dark:bg-slate-800/60 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-200 text-xs font-semibold border border-slate-200/60 dark:border-slate-700/40 transition-all duration-200 active:scale-95 backdrop-blur-sm"
+              title="Resmi MEB Raporları ve Baskı Merkezi"
+              aria-label="Raporlar ve Yazdırma Merkezini Aç"
+            >
+              <Printer className="w-4 h-4 text-slate-500 dark:text-slate-400" aria-hidden="true" />
+              <span className="hidden md:inline">Raporlar</span>
+            </button>
+
+            {/* Dark / Light Toggle */}
+            <button
+              type="button"
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-xl transition-all duration-200 hover:scale-110 active:scale-95"
+              style={{
+                background: darkMode
+                  ? 'rgba(251,191,36,0.1)'
+                  : 'rgba(99,102,241,0.07)',
+                border: darkMode
+                  ? '1px solid rgba(251,191,36,0.25)'
+                  : '1px solid rgba(99,102,241,0.15)',
+                color: darkMode ? '#fbbf24' : '#6366f1'
+              }}
+              title={darkMode ? 'Açık Mod' : 'Karanlık Mod'}
+              aria-label={darkMode ? 'Açık moda geç' : 'Karanlık moda geç'}
+            >
+              {darkMode ? (
+                <Sun className="w-4 h-4" aria-hidden="true" />
+              ) : (
+                <Moon className="w-4 h-4" aria-hidden="true" />
+              )}
+            </button>
+          </div>
+
         </div>
-
       </div>
     </header>
   );

@@ -5,11 +5,26 @@ import {
   School,
   Clock,
   MapPin,
-  FileText,
   Plus,
   Trash2,
   Save,
-  CheckCircle2
+  CheckCircle2,
+  Menu,
+  Lock,
+  Unlock,
+  ArrowUp,
+  ArrowDown,
+  RotateCcw,
+  LayoutDashboard,
+  CalendarDays,
+  Users,
+  GraduationCap,
+  BookOpen,
+  Link2,
+  Scale,
+  ClipboardEdit,
+  FileText,
+  Database
 } from 'lucide-react';
 
 export default function SchoolSettingsView() {
@@ -21,14 +36,52 @@ export default function SchoolSettingsView() {
     deleteHour,
     rooms,
     addRoom,
-    deleteRoom
+    deleteRoom,
+    sidebarReorderEnabled,
+    setSidebarReorderEnabled,
+    sidebarOrder,
+    setSidebarOrder,
+    resetSidebarOrder,
+    DEFAULT_MENU_ORDER
   } = useApp();
 
   const [formData, setFormData] = useState({ ...schoolInfo });
   const [newHour, setNewHour] = useState('');
   const [newRoomName, setNewRoomName] = useState('');
   const [newRoomCapacity, setNewRoomCapacity] = useState(30);
-  const [activeTab, setActiveTab] = useState('general'); // 'general' | 'hours_rooms' | 'official_text'
+  const [activeTab, setActiveTab] = useState('general'); // 'general' | 'hours_rooms' | 'menu'
+
+  const MENU_ITEM_META = {
+    dashboard: { label: 'Gösterge Paneli', icon: LayoutDashboard },
+    schedule: { label: 'Sınav Programı & Takvim', icon: CalendarDays },
+    teachers: { label: 'Öğretmenler & Komisyon', icon: Users },
+    students: { label: 'Öğrenci Sorumluluk Listesi', icon: GraduationCap },
+    courses: { label: 'Dersler & Seviyeler', icon: BookOpen },
+    'course-branches': { label: 'Ders - Branş Eşleştirme', icon: Link2 },
+    duties: { label: 'Görev Dağılım Çizelgesi', icon: Scale },
+    commission: { label: 'Komisyon Manuel Düzenle', icon: ClipboardEdit },
+    reports: { label: 'MEB Resmi Raporları', icon: FileText },
+    settings: { label: 'Okul Bilgileri & Ayarlar', icon: Settings },
+    backup: { label: 'Yedekleme & Veri', icon: Database }
+  };
+
+  const handleMoveUp = (index) => {
+    if (index <= 0) return;
+    const newOrder = [...sidebarOrder];
+    const temp = newOrder[index - 1];
+    newOrder[index - 1] = newOrder[index];
+    newOrder[index] = temp;
+    setSidebarOrder(newOrder);
+  };
+
+  const handleMoveDown = (index) => {
+    if (index >= sidebarOrder.length - 1) return;
+    const newOrder = [...sidebarOrder];
+    const temp = newOrder[index + 1];
+    newOrder[index + 1] = newOrder[index];
+    newOrder[index] = temp;
+    setSidebarOrder(newOrder);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,7 +121,7 @@ export default function SchoolSettingsView() {
           <span>Okul Bilgileri ve Sınav Ayarları</span>
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-          Kurum bilgileri, sınav dönemi, sınav saatleri, salonları ve resmi yazışma şablonları
+          Kurum bilgileri, sınav dönemi, sınav saatleri, salonlar ve sol menü düzeni
         </p>
       </div>
 
@@ -99,15 +152,24 @@ export default function SchoolSettingsView() {
         </button>
 
         <button
-          onClick={() => setActiveTab('official_text')}
+          onClick={() => setActiveTab('menu')}
           className={`flex items-center space-x-2 px-4 py-2.5 border-b-2 text-xs sm:text-sm font-semibold transition-all ${
-            activeTab === 'official_text'
+            activeTab === 'menu'
               ? 'border-rose-600 text-rose-600 dark:text-rose-400'
               : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
           }`}
         >
-          <FileText className="w-4 h-4" />
-          <span>Resmi Yazışma & Makam Oluru</span>
+          <Menu className="w-4 h-4" />
+          <span>Sol Menü Düzeni</span>
+          {sidebarReorderEnabled ? (
+            <span className="ml-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+              🔓 Düzenleme Açık
+            </span>
+          ) : (
+            <span className="ml-1.5 px-2 py-0.5 text-[10px] font-bold rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+              🔒 Sabit
+            </span>
+          )}
         </button>
       </div>
 
@@ -141,7 +203,7 @@ export default function SchoolSettingsView() {
                 name="valilik"
                 value={formData.valilik || ''}
                 onChange={handleChange}
-                placeholder="Örn: AFYONKARAHİSAR VALİLİĞİ"
+                placeholder="Örn: ... VALİLİĞİ"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 uppercase"
               />
             </div>
@@ -394,116 +456,160 @@ export default function SchoolSettingsView() {
         </div>
       )}
 
-      {/* TAB 3: Official Letter Text Template */}
-      {activeTab === 'official_text' && (
-        <form onSubmit={handleSaveInfo} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Resmi Antet Başlığı (Kaşe Üstü)
-              </label>
-              <textarea
-                rows={3}
-                name="antet"
-                value={formData.antet || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-mono"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Resmi Yazı Sayısı
-                </label>
-                <input
-                  type="text"
-                  name="sayi"
-                  value={formData.sayi || ''}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs"
-                />
+      {/* TAB 3: Menu Reorder & Lock */}
+      {activeTab === 'menu' && (
+        <div className="space-y-6">
+          {/* Lock / Unlock Toggle Card */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-start space-x-3.5">
+                <div className={`p-3 rounded-2xl ${
+                  sidebarReorderEnabled
+                    ? 'bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400'
+                    : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400'
+                }`}>
+                  {sidebarReorderEnabled ? (
+                    <Unlock className="w-6 h-6 animate-pulse" />
+                  ) : (
+                    <Lock className="w-6 h-6" />
+                  )}
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2.5">
+                    <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                      Sol Menü Sürükle - Bırak Kilidi
+                    </h2>
+                    {sidebarReorderEnabled ? (
+                      <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                        🔓 Düzenleme Açık
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                        🔒 Menü Sabit (Kilitli)
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
+                    {sidebarReorderEnabled
+                      ? 'Menü şu an düzenlenebilir durumdadır. Sol menüdeki öğeleri sürükleyip bırakarak veya aşağıdaki ok tuşları ile sıralayabilirsiniz. Düzenlemeyi tamamladıktan sonra menüyü kilitleyebilirsiniz.'
+                      : 'Menü öğelerinin kazara sürüklenip yer değiştirmesini önlemek için sürükle-bırak özelliği varsayılan olarak kilitlenmiştir. Sıralamayı değiştirmek istediğinizde kilidi açabilirsiniz.'}
+                  </p>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Resmi Yazı Konusu
-                </label>
-                <input
-                  type="text"
-                  name="konu"
-                  value={formData.konu || ''}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs"
-                />
-              </div>
-            </div>
+              {/* Action Buttons */}
+              <div className="flex items-center gap-2.5 shrink-0 self-start md:self-center">
+                <button
+                  type="button"
+                  onClick={() => setSidebarReorderEnabled(!sidebarReorderEnabled)}
+                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-sm ${
+                    sidebarReorderEnabled
+                      ? 'bg-rose-600 hover:bg-rose-700 text-white'
+                      : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  }`}
+                >
+                  {sidebarReorderEnabled ? (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      <span>Menüyü Kilitle (Sabitle)</span>
+                    </>
+                  ) : (
+                    <>
+                      <Unlock className="w-4 h-4" />
+                      <span>Düzenlemeyi Aç (Kilidi Kaldır)</span>
+                    </>
+                  )}
+                </button>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Yazı İlgisi (Mevzuat Maddesi)
-              </label>
-              <input
-                type="text"
-                name="ilgi"
-                value={formData.ilgi || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Makam Olur Yazısı Gövde Metni
-              </label>
-              <textarea
-                rows={6}
-                name="govde"
-                value={formData.govde || ''}
-                onChange={handleChange}
-                className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs font-sans leading-relaxed"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Şube / İlçe Müdürü Onay Makamı
-                </label>
-                <input
-                  type="text"
-                  name="onay2Makam"
-                  value={formData.onay2Makam || ''}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Son Olur Makamı (Vali / Kaymakam)
-                </label>
-                <input
-                  type="text"
-                  name="olurMakam"
-                  value={formData.olurMakam || ''}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-xs"
-                />
+                <button
+                  type="button"
+                  onClick={resetSidebarOrder}
+                  className="flex items-center space-x-1.5 px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-all"
+                  title="Varsayılan MEB menü sıralamasına döndürür"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Sıralamayı Sıfırla</span>
+                </button>
               </div>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-            <button
-              type="submit"
-              className="flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold shadow-md shadow-rose-600/20 active:scale-95 transition-all"
-            >
-              <Save className="w-4 h-4" />
-              <span>Resmi Şablonu Kaydet</span>
-            </button>
+          {/* Menu Items Reorder List Card */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-slate-900 dark:text-white text-base flex items-center space-x-2">
+                  <Menu className="w-5 h-5 text-rose-600 dark:text-rose-400" />
+                  <span>Menü Öğeleri Sıralaması</span>
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Öğelerin sırasını aşağıdaki <b>Yukarı (↑)</b> ve <b>Aşağı (↓)</b> butonları ile doğrudan ayarlayabilirsiniz.
+                </p>
+              </div>
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+                Toplam {sidebarOrder.length} Menü Başlığı
+              </span>
+            </div>
+
+            <div className="divide-y divide-slate-100 dark:divide-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden bg-slate-50/50 dark:bg-slate-900/50">
+              {sidebarOrder.map((id, index) => {
+                const meta = MENU_ITEM_META[id] || { label: id, icon: Menu };
+                const IconComponent = meta.icon;
+                const isFirst = index === 0;
+                const isLast = index === sidebarOrder.length - 1;
+
+                return (
+                  <div
+                    key={id}
+                    className="p-3.5 flex items-center justify-between hover:bg-white dark:hover:bg-slate-800/80 transition-colors"
+                  >
+                    <div className="flex items-center space-x-3.5">
+                      <span className="w-6 h-6 rounded-lg bg-slate-200/80 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold flex items-center justify-center shrink-0">
+                        {index + 1}
+                      </span>
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 shrink-0">
+                        <IconComponent className="w-4 h-4" />
+                      </div>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs sm:text-sm">
+                        {meta.label}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center space-x-1.5">
+                      <button
+                        type="button"
+                        onClick={() => handleMoveUp(index)}
+                        disabled={isFirst}
+                        className={`p-2 rounded-lg text-xs font-medium transition-all ${
+                          isFirst
+                            ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed'
+                            : 'text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-700 shadow-xs'
+                        }`}
+                        title={isFirst ? 'Zaten en üstte' : 'Yukarı Taşı'}
+                      >
+                        <ArrowUp className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleMoveDown(index)}
+                        disabled={isLast}
+                        className={`p-2 rounded-lg text-xs font-medium transition-all ${
+                          isLast
+                            ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed'
+                            : 'text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40 border border-slate-200 dark:border-slate-700 shadow-xs'
+                        }`}
+                        title={isLast ? 'Zaten en altta' : 'Aşağı Taşı'}
+                      >
+                        <ArrowDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </form>
+        </div>
       )}
 
     </div>

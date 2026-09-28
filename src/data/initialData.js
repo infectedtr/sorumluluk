@@ -16,10 +16,19 @@ export const initialSchoolInfo = {
   konu: '',
   ilgi: '',
   govde: '',
-  onay2: 'Uygun Görüşle Arz Ederim',
-  onay2Makam: 'Milli Eğitim Şube Müdürü',
-  onay3Makam: 'Milli Eğitim Müdürü',
-  olurMakam: 'Vali'
+  onay2: 'Uygun görüşle arz ederim.',
+  onay2Makam: 'Şube Müdürü',
+  onay2Ad: '',
+  onay3Makam: 'İl Millî Eğitim Müdürü',
+  onay3Ad: '',
+  olurMakam: 'OLUR',
+  ebysKodu: '',
+  dogrulamaAdresi: 'https://www.turkiye.gov.tr/meb-ebys',
+  kepAdresi: 'meb@hs01.kep.tr',
+  bilgiIcin: '',
+  bilgiUnvan: 'Veri Hazırlama ve Kontrol İşletmeni',
+  olurTarih: '',
+  sinavTarihAraligi: ''
 };
 
 export const initialTeachers = [];
