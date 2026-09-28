@@ -24,6 +24,30 @@
   background: rgba(100, 116, 139, 0.5);
 }
 
+@media screen {
+  .teblig-copies {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 16px;
+    width: 100%;
+  }
+
+  .teblig-copy {
+    min-width: 0;
+    padding: 8px;
+  }
+
+  .teblig-cut-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    border-left: 1px dashed #94a3b8;
+    pointer-events: none;
+  }
+}
+
 /* Print Specific Rules for MEB Official Documents */
 @media print {
   @page {
@@ -34,6 +58,11 @@
   @page fee-landscape {
     size: A4 landscape;
     margin: 10mm;
+  }
+
+  @page teblig-landscape {
+    size: A4 landscape;
+    margin: 8mm;
   }
 
   body {
@@ -63,6 +92,66 @@
   .fee-program-sheet,
   .fee-summary-sheet {
     page: fee-landscape;
+  }
+
+  .teblig-print-page {
+    page: teblig-landscape;
+    width: 100%;
+    min-height: 0 !important;
+  }
+
+  .teblig-page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .teblig-copies {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 8mm;
+    width: 100%;
+  }
+
+  .teblig-copy {
+    min-width: 0;
+    padding: 0 2mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    font-size: 7pt !important;
+  }
+
+  .teblig-copy-text {
+    margin-top: 3mm;
+    margin-bottom: 2mm;
+    font-size: 7pt !important;
+    line-height: 1.25;
+  }
+
+  .teblig-duty-table {
+    table-layout: fixed;
+    font-size: 6pt !important;
+    line-height: 1.15;
+  }
+
+  .teblig-duty-table th,
+  .teblig-duty-table td {
+    padding: 1.2mm 0.7mm !important;
+    overflow-wrap: anywhere;
+  }
+
+  .teblig-signatures {
+    padding-top: 3mm !important;
+    font-size: 7pt !important;
+  }
+
+  .teblig-cut-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    border-left: 1px dashed #111;
+    pointer-events: none;
   }
 
   .fee-report-page + .fee-report-page {

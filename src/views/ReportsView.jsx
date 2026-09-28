@@ -98,6 +98,9 @@ export default function ReportsView() {
   };
 
   const selectedExam = schedule.find((e) => e.id === Number(selectedExamId)) || schedule[0];
+  const noticeTeachers = selectedTeacherName === 'all'
+    ? teacherStats.filter((teacher) => teacher.count > 0)
+    : teacherStats.filter((teacher) => teacher.name === selectedTeacherName);
   const uniqueDates = Array.from(new Set(schedule.map((ex) => ex.tarih).filter(Boolean))).sort();
   const feeTeachers = teacherStats
     .filter((teacher) => teacher.count > 0)
@@ -308,7 +311,7 @@ export default function ReportsView() {
       </div>
 
       {/* PAPER CANVAS: Printable Area */}
-      <div className="bg-white text-black p-8 sm:p-12 rounded-2xl shadow-xl border border-slate-200 min-h-[900px] print:p-0 print:border-none print:shadow-none">
+      <div className="bg-white text-black p-8 sm:p-12 rounded-2xl shadow-xl border border-slate-200 min-h-[900px] print:min-h-0 print:p-0 print:border-none print:shadow-none">
         
         {/* ============================================================== */}
         {/* RAPOR 1: GENEL SORUMLULUK SINAV PROGRAMI ÇİZELGESİ */}
@@ -547,81 +550,84 @@ export default function ReportsView() {
         {/* RAPOR 4: ÖĞRETMEN SINAV GÖREV TEBLİĞ BELGESİ */}
         {/* ============================================================== */}
         {activeReport === 'ogretmen_teblig' && (
-          <div className="space-y-12">
-            {(selectedTeacherName === 'all'
-              ? teacherStats.filter((t) => t.count > 0)
-              : teacherStats.filter((t) => t.name === selectedTeacherName)
-            ).map((t, idx) => (
-              <div key={idx} className="space-y-4 page-break-inside-avoid pb-8 border-b-2 border-dashed border-slate-300 print:border-black">
-                <div className="text-center space-y-1">
-                  <h2 className="font-bold text-xs">T.C. - {schoolInfo.valilik}</h2>
-                  <h3 className="font-bold text-sm">{schoolInfo.okulAdi}</h3>
-                  <h4 className="font-bold text-xs uppercase">
-                    SORUMLULUK SINAVLARI GÖREV TEBLİĞ BELGESİ
-                  </h4>
-                  <p className="text-[11px]">{schoolInfo.ogretimYili} Eğitim-Öğretim Yılı {schoolInfo.donem} Dönemi</p>
-                </div>
+          <div className="teblig-report">
+            {noticeTeachers.map((t, idx) => (
+              <section
+                key={idx}
+                className={`teblig-print-page ${idx < noticeTeachers.length - 1 ? 'teblig-page-break' : ''}`}
+              >
+                <div className="teblig-copies">
+                  {[0, 1].map((copyIndex) => (
+                    <div key={copyIndex} className="teblig-copy">
+                      <div className="text-center space-y-1">
+                        <h2 className="font-bold text-xs">T.C. - {schoolInfo.valilik}</h2>
+                        <h3 className="font-bold text-sm">{schoolInfo.okulAdi}</h3>
+                        <h4 className="font-bold text-xs uppercase">
+                          SORUMLULUK SINAVLARI GÖREV TEBLİĞ BELGESİ
+                        </h4>
+                        <p className="text-[11px]">{schoolInfo.ogretimYili} Eğitim-Öğretim Yılı {schoolInfo.donem} Dönemi</p>
+                      </div>
 
-                <div className="text-xs space-y-2">
-                  <p><strong>Sayın:</strong> {t.name} ({t.branch})</p>
-                  <p className="text-justify leading-relaxed">
-                    {schoolInfo.ogretimYili} Eğitim-Öğretim Yılı {schoolInfo.donem} Dönemi Sorumluluk Sınavlarında aşağıda belirtilen gün, saat ve derslerde sınav komisyon üyesi / gözcü olarak görevlendirilmiş bulunmaktasınız. Her oturum için birlikte görev yapacağınız diğer komisyon üyeleri ve gözcüler de belirtilmiştir. Sınav evraklarının sınav saatinden 30 dakika önce idareden teslim alınarak sınavın mevzuat hükümlerine uygun yürütülmesi hususunda;
-                    <br />
-                    Bilgilerinizi ve gereğini rica ederim.
-                  </p>
-                </div>
+                      <div className="teblig-copy-text text-xs">
+                        <p><strong>Sayın:</strong> {t.name} ({t.branch})</p>
+                        <p className="text-justify leading-relaxed">
+                          {schoolInfo.ogretimYili} Eğitim-Öğretim Yılı {schoolInfo.donem} Dönemi Sorumluluk Sınavlarında aşağıda belirtilen gün, saat ve derslerde sınav komisyon üyesi / gözcü olarak görevlendirilmiş bulunmaktasınız. Her oturum için birlikte görev yapacağınız diğer komisyon üyeleri ve gözcüler de belirtilmiştir. Sınav evraklarının sınav saatinden 30 dakika önce idareden teslim alınarak sınavın mevzuat hükümlerine uygun yürütülmesi hususunda; Bilgilerinizi ve gereğini rica ederim.
+                        </p>
+                      </div>
 
-                {/* Teacher's Exam Duties Table */}
-                <table className="w-full text-xs border-collapse border border-black">
-                  <thead>
-                    <tr className="bg-slate-100">
-                      <th className="border border-black p-1 w-8 text-center">S.No</th>
-                      <th className="border border-black p-1 w-24 text-center">Sınav Tarihi</th>
-                      <th className="border border-black p-1 w-16 text-center">Saat</th>
-                      <th className="border border-black p-1">Dersin Adı</th>
-                      <th className="border border-black p-1 w-16 text-center">Seviye</th>
-                      <th className="border border-black p-1 w-24">Sınav Yeri</th>
-                      <th className="border border-black p-1 w-24 text-center">Görevi</th>
-                      <th className="border border-black p-1">Diğer Komisyon Üyeleri / Gözcüler</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {t.assignments.map((asg, aIdx) => {
-                      const exam = schedule.find((item) => String(item.id) === String(asg.examId));
-                      const otherStaff = exam
-                        ? getExamStaff(exam).filter((name) => name !== t.name).join(', ')
-                        : '';
-                      return (
-                        <tr key={aIdx}>
-                          <td className="border border-black p-1 text-center">{aIdx + 1}</td>
-                          <td className="border border-black p-1 text-center font-medium">{asg.tarih}</td>
-                          <td className="border border-black p-1 text-center font-bold">{asg.saat}</td>
-                          <td className="border border-black p-1 font-bold">{asg.ders}</td>
-                          <td className="border border-black p-1 text-center">{asg.seviye}. Sınıf</td>
-                          <td className="border border-black p-1">{asg.salon}</td>
-                          <td className="border border-black p-1 text-center font-semibold">{asg.role}</td>
-                          <td className="border border-black p-1">{otherStaff || '-'}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                      <table className="teblig-duty-table w-full text-xs border-collapse border border-black">
+                        <thead>
+                          <tr className="bg-slate-100">
+                            <th className="border border-black p-1 text-center">S.No</th>
+                            <th className="border border-black p-1 text-center">Tarih</th>
+                            <th className="border border-black p-1 text-center">Saat</th>
+                            <th className="border border-black p-1">Ders</th>
+                            <th className="border border-black p-1 text-center">Seviye</th>
+                            <th className="border border-black p-1">Yer</th>
+                            <th className="border border-black p-1 text-center">Görev</th>
+                            <th className="border border-black p-1">Diğer Görevliler</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {t.assignments.map((asg, aIdx) => {
+                            const exam = schedule.find((item) => String(item.id) === String(asg.examId));
+                            const otherStaff = exam
+                              ? getExamStaff(exam).filter((name) => name !== t.name).join(', ')
+                              : '';
+                            return (
+                              <tr key={aIdx}>
+                                <td className="border border-black p-1 text-center">{aIdx + 1}</td>
+                                <td className="border border-black p-1 text-center font-medium">{asg.tarih}</td>
+                                <td className="border border-black p-1 text-center font-bold">{asg.saat}</td>
+                                <td className="border border-black p-1 font-bold">{asg.ders}</td>
+                                <td className="border border-black p-1 text-center">{asg.seviye}. Sınıf</td>
+                                <td className="border border-black p-1">{asg.salon}</td>
+                                <td className="border border-black p-1 text-center font-semibold">{asg.role}</td>
+                                <td className="border border-black p-1">{otherStaff || '-'}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
 
-                {/* Tebliğ - Tebellüğ Signatures */}
-                <div className="grid grid-cols-2 pt-4 text-xs">
-                  <div>
-                    <p className="font-bold">TEBELLÜĞ EDEN</p>
-                    <p>{t.name}</p>
-                    <p>İmza: ........................</p>
-                    <p>Tarih: {datePlaceholder}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold">TEBLİĞ EDEN</p>
-                    <p className="font-bold">{schoolInfo.okulMuduru}</p>
-                    <p>{schoolInfo.unvan}</p>
-                  </div>
+                      <div className="teblig-signatures grid grid-cols-2 pt-4 text-xs">
+                        <div>
+                          <p className="font-bold">TEBELLÜĞ EDEN</p>
+                          <p>{t.name}</p>
+                          <p>İmza: ........................</p>
+                          <p>Tarih: {datePlaceholder}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold">TEBLİĞ EDEN</p>
+                          <p className="font-bold">{schoolInfo.okulMuduru}</p>
+                          <p>{schoolInfo.unvan}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="teblig-cut-line" aria-hidden="true" />
                 </div>
-              </div>
+              </section>
             ))}
           </div>
         )}
