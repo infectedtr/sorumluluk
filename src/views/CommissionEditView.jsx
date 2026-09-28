@@ -85,7 +85,7 @@ function TeacherSelect({ value, onChange, teachers, dersAdi, exclude = [], label
 }
 
 // Tek sınav satırı düzenleme kartı
-function ExamRow({ exam, teachers, onSave, showBranshHint }) {
+function ExamRow({ exam, teachers, rooms, onSave, showBranshHint }) {
   const [uye1, setUye1] = useState(exam.uye1 || "");
   const [uye2, setUye2] = useState(exam.uye2 || "");
   const [uye3, setUye3] = useState(exam.uye3 || "");
@@ -126,9 +126,23 @@ function ExamRow({ exam, teachers, onSave, showBranshHint }) {
       {/* Salon */}
       <div className="flex items-center gap-2">
         <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-        <input type="text" value={salon} onChange={(e) => m(() => setSalon(e.target.value))}
-          placeholder="Sinav yeri / salon adi yazin..."
-          className="flex-1 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30" />
+        <div className="flex-1">
+          <label htmlFor={`exam-room-${exam.id}`} className="mb-1 block text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+            Sınav Yeri / Salonu
+          </label>
+          <input
+            id={`exam-room-${exam.id}`}
+            type="text"
+            list={`exam-room-options-${exam.id}`}
+            value={salon}
+            onChange={(e) => m(() => setSalon(e.target.value))}
+            placeholder="Sınav yeri / salon adı yazın veya listeden seçin..."
+            className="w-full px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+          />
+          <datalist id={`exam-room-options-${exam.id}`}>
+            {rooms.map((room) => <option key={room.id} value={room.name} />)}
+          </datalist>
+        </div>
       </div>
       {/* Komisyon grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -163,7 +177,7 @@ function ExamRow({ exam, teachers, onSave, showBranshHint }) {
 
 // Ana sayfa
 export default function CommissionEditView() {
-  const { schedule, teachers, schoolInfo, updateExam, runAutoAssignment } = useApp();
+  const { schedule, teachers, rooms, schoolInfo, updateExam, runAutoAssignment } = useApp();
   const [search, setSearch] = useState("");
   const [filterSeviye, setFilterSeviye] = useState("all");
   const [filterDate, setFilterDate] = useState("");
@@ -250,7 +264,7 @@ export default function CommissionEditView() {
       ) : (
         <div className="space-y-3">
           {filtered.map((exam)=>(
-            <ExamRow key={exam.id} exam={exam} teachers={activeTeachers} onSave={updateExam} showBranshHint={showBranshHint} />
+            <ExamRow key={exam.id} exam={exam} teachers={activeTeachers} rooms={rooms} onSave={updateExam} showBranshHint={showBranshHint} />
           ))}
         </div>
       )}
