@@ -6,6 +6,7 @@ import {
   Users,
   GraduationCap,
   BookOpen,
+  Link2,
   Scale,
   ClipboardEdit,
   FileText,
@@ -56,6 +57,12 @@ export default function Sidebar() {
       label: 'Dersler & Seviyeler',
       icon: BookOpen,
       badge: courses.length
+    },
+    {
+      id: 'course-branches',
+      label: 'Ders - Branş Eşleştirme',
+      icon: Link2,
+      badge: null
     },
     {
       id: 'duties',

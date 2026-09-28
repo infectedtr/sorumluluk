@@ -3,9 +3,15 @@ import { loadStoredData, saveStoredData, resetToAccessData } from '../data/stora
 import { checkConflicts, calculateTeacherStats, autoAssignCommission } from '../utils/scheduler';
 import { isHeaderOrFooterLabel, formatEOkulClassName } from '../utils/excelParser';
 import { normalizeExamType } from '../utils/examTypes';
+import { normalizeCourseKey } from '../utils/courseBranchMapping';
 import { isAdministratorPosition, isAssignableTeacher, removeAdministratorAssignments } from '../utils/teacherEligibility';
 
 const AppContext = createContext();
+
+function getObserverThreshold(schoolInfo) {
+  const threshold = Number(schoolInfo.gozcuEsikOgrenciSayisi);
+  return Number.isFinite(threshold) && threshold >= 0 ? threshold : 30;
+}
 
 export function AppProvider({ children }) {
   const [data, setData] = useState(() => {
@@ -281,6 +287,18 @@ export function AppProvider({ children }) {
     showToast('Ders kaydı silindi.', 'info');
   };
 
+  const updateCourseBranchMapping = (courseName, branches) => {
+    const key = normalizeCourseKey(courseName);
+    if (!key) return;
+    setData((prev) => {
+      const courseBranchMappings = { ...prev.courseBranchMappings };
+      const uniqueBranches = [...new Set(branches.filter(Boolean))];
+      if (uniqueBranches.length) courseBranchMappings[key] = uniqueBranches;
+      else delete courseBranchMappings[key];
+      return { ...prev, courseBranchMappings };
+    });
+  };
+
   const deleteCourses = (ids) => {
     const idStrings = ids.map(String);
     setData((prev) => ({
@@ -455,7 +473,9 @@ export function AppProvider({ children }) {
       data.schedule,
       data.teachers,
       data.students,
-      data.schoolInfo.okulMuduru
+      data.schoolInfo.okulMuduru,
+      data.courseBranchMappings,
+      getObserverThreshold(data.schoolInfo)
     );
     setData((prev) => ({
       ...prev,
@@ -474,7 +494,10 @@ export function AppProvider({ children }) {
   // Import whole JSON
   const handleImportJson = (parsedJson) => {
     if (parsedJson && parsedJson.teachers && parsedJson.schedule) {
-      setData(parsedJson);
+      setData({
+        ...parsedJson,
+        courseBranchMappings: parsedJson.courseBranchMappings || {}
+      });
       showToast('Yedek başarıyla yüklendi.');
       return true;
     }
@@ -483,7 +506,11 @@ export function AppProvider({ children }) {
   };
 
   // Computed state
-  const conflicts = checkConflicts(data.schedule, data.students);
+  const conflicts = checkConflicts(
+    data.schedule,
+    data.students,
+    getObserverThreshold(data.schoolInfo)
+  );
   const teacherStats = calculateTeacherStats(data.teachers, data.schedule);
 
   return (
@@ -516,6 +543,7 @@ export function AppProvider({ children }) {
         clearAllStudents,
         bulkAddStudents,
         deleteCourse,
+        updateCourseBranchMapping,
         deleteCourses,
         clearAllCourses,
         syncCoursesFromStudents,

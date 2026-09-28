@@ -12,6 +12,7 @@ import ReportsView from './views/ReportsView';
 import SchoolSettingsView from './views/SchoolSettingsView';
 import BackupView from './views/BackupView';
 import CommissionEditView from './views/CommissionEditView';
+import CourseBranchMappingView from './views/CourseBranchMappingView';
 import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
 function MainLayout() {
@@ -30,6 +31,7 @@ function MainLayout() {
           {activeTab === 'teachers' && <TeachersView />}
           {activeTab === 'students' && <StudentsView />}
           {activeTab === 'courses' && <CoursesView />}
+          {activeTab === 'course-branches' && <CourseBranchMappingView />}
           {activeTab === 'duties' && <DutyDistributionView />}
           {activeTab === 'commission' && <CommissionEditView />}
           {activeTab === 'reports' && <ReportsView />}

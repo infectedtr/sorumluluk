@@ -1,11 +1,12 @@
 import { normalizeExamType } from './examTypes.js';
 import { isAssignableTeacher } from './teacherEligibility.js';
 import { getExamObservers } from './examRoles.js';
+import { normalizeCourseKey, teacherMatchesCourseBranch } from './courseBranchMapping.js';
 
 /**
  * Checks for conflicts in the schedule
  */
-export function checkConflicts(schedule, students = []) {
+export function checkConflicts(schedule, students = [], observerThreshold = 30) {
   const teacherConflicts = [];
   const roomConflicts = [];
   const studentConflicts = [];
@@ -33,15 +34,15 @@ export function checkConflicts(schedule, students = []) {
       });
     }
 
-    // Rule: Over 30 students needs 3 members (observer / gozcu)
-    if (exam.ogrenciSayisi > 30 && commissionMembers.length + getExamObservers(exam).length < 3) {
+    // A configured threshold triggers an observer when the student count exceeds it.
+    if (exam.ogrenciSayisi > observerThreshold && commissionMembers.length + getExamObservers(exam).length < 3) {
       warnings.push({
         examId: exam.id,
         ders: exam.ders,
         tarih: exam.tarih,
         saat: exam.saat,
         type: 'gozcu_eksik',
-        message: `${exam.ders} sınavında ${exam.ogrenciSayisi} öğrenci bulunmaktadır (30'dan fazla). MEB Madde 58 gereği ilave gözcü görevlendirilmesi tavsiye edilir.`
+        message: `${exam.ders} sınavında ${exam.ogrenciSayisi} öğrenci bulunmaktadır (belirlenen ${observerThreshold} öğrenci eşiğinin üzerinde). İlave gözcü görevlendirilmesi tavsiye edilir.`
       });
     }
   });
@@ -200,7 +201,14 @@ export function calculateTeacherStats(teachers, schedule) {
  *  - Aynı tarih+saat diliminde bir öğretmene 2 görev verilemez
  *  - Komisyon üye sayısı minimum 2 (uye1 + uye2 = alan öğretmeni)
  */
-export function autoAssignCommission(schedule, teachers, students = [], principalName = '') {
+export function autoAssignCommission(
+  schedule,
+  teachers,
+  students = [],
+  principalName = '',
+  courseBranchMappings = {},
+  observerThreshold = 30
+) {
   // İçe aktarma inline ders-branş eşleştirme haritası kullanılıyor
   const activeTeachers = teachers.filter((teacher) => isAssignableTeacher(teacher, principalName));
   if (activeTeachers.length === 0) return schedule;
@@ -336,13 +344,24 @@ export function autoAssignCommission(schedule, teachers, students = [], principa
     if (available.length === 0) return '';
 
     // Branşa uygun öğretmenler
-    const branshUygun = available.filter((t) => branshUygunMu(t.branch, ders));
-    if (branshUygun.length === 0 && alan && !isCultureCourse(ders)) {
+    const mappingKey = normalizeCourseKey(ders);
+    const hasCourseBranchMapping = Array.isArray(courseBranchMappings?.[mappingKey])
+      && courseBranchMappings[mappingKey].length > 0;
+    const branshUygun = available.filter((teacher) => {
+      const explicitMatch = teacherMatchesCourseBranch(teacher.branch, ders, courseBranchMappings);
+      return explicitMatch === null ? branshUygunMu(teacher.branch, ders) : explicitMatch;
+    });
+    if (branshUygun.length === 0 && !hasCourseBranchMapping && alan && !isCultureCourse(ders)) {
       const fieldTeachers = available.filter((t) => teacherMatchesField(t.branch, alan));
       if (fieldTeachers.length > 0) {
         fieldTeachers.sort((a, b) => (dutyCounts[a.name] || 0) - (dutyCounts[b.name] || 0));
         return fieldTeachers[0].name;
       }
+    }
+
+    if (hasCourseBranchMapping && branshUygun.length > 0) {
+      branshUygun.sort((a, b) => (dutyCounts[a.name] || 0) - (dutyCounts[b.name] || 0));
+      return branshUygun[0].name;
     }
 
     const pool = (requireBranch && branshUygun.length > 0) ? branshUygun : available;
@@ -388,7 +407,7 @@ export function autoAssignCommission(schedule, teachers, students = [], principa
     }
 
     // İlk iki görev komisyon üyesidir; sonraki görevli gözcü olarak atanır.
-    if ((exam.ogrenciSayisi || 0) > 30) {
+    if ((exam.ogrenciSayisi || 0) > observerThreshold) {
       const uye3 = getBestTeacher(exam.tarih, exam.saat, exam.ders, assigned, false, alan);
       if (uye3) {
         exam.uye3 = uye3;

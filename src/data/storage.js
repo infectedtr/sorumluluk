@@ -4,6 +4,7 @@ import {
   initialHours,
   initialRooms,
   initialCourses,
+  initialCourseBranchMappings,
   initialStudents,
   initialSchedule
 } from './initialData';
@@ -15,7 +16,7 @@ export function loadStoredData() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      const schoolInfo = parsed.schoolInfo || initialSchoolInfo;
+      const schoolInfo = { ...initialSchoolInfo, ...(parsed.schoolInfo || {}) };
       return {
         schoolInfo: schoolInfo.mudurYardimcisi === 'Sorumluluk Sınavları Komisyon Başkanı'
           ? { ...schoolInfo, mudurYardimcisi: '' }
@@ -24,6 +25,9 @@ export function loadStoredData() {
         hours: parsed.hours || initialHours,
         rooms: parsed.rooms || initialRooms,
         courses: parsed.courses || initialCourses,
+        courseBranchMappings: parsed.courseBranchMappings && typeof parsed.courseBranchMappings === 'object'
+          ? parsed.courseBranchMappings
+          : initialCourseBranchMappings,
         students: parsed.students || initialStudents,
         schedule: parsed.schedule || initialSchedule,
       };
@@ -38,6 +42,7 @@ export function loadStoredData() {
     hours: initialHours,
     rooms: initialRooms,
     courses: initialCourses,
+    courseBranchMappings: initialCourseBranchMappings,
     students: initialStudents,
     schedule: initialSchedule,
   };
@@ -58,6 +63,7 @@ export function resetToAccessData() {
     hours: initialHours,
     rooms: initialRooms,
     courses: initialCourses,
+    courseBranchMappings: initialCourseBranchMappings,
     students: initialStudents,
     schedule: initialSchedule,
   };

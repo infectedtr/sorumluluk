@@ -245,6 +245,24 @@ export default function SchoolSettingsView() {
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20"
               />
             </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Gözcü Görevlendirme Öğrenci Eşiği
+              </label>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                name="gozcuEsikOgrenciSayisi"
+                value={formData.gozcuEsikOgrenciSayisi ?? 30}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                Öğrenci sayısı bu değeri aştığında otomatik atamada gözcü eklenir. Varsayılan: 30.
+              </p>
+            </div>
           </div>
 
           <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">

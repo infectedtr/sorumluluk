@@ -38,6 +38,7 @@ export default function BackupView() {
       hours: context.hours,
       rooms: context.rooms,
       courses: context.courses,
+      courseBranchMappings: context.courseBranchMappings,
       students: context.students,
       schedule: context.schedule
     });

@@ -2,6 +2,7 @@ export const initialSchoolInfo = {
   okulAdi: '',
   ogretimYili: '',
   donem: '',
+  gozcuEsikOgrenciSayisi: 30,
   okulMuduru: '',
   mudurYardimcisi: '',
   valilik: '',
@@ -25,5 +26,6 @@ export const initialTeachers = [];
 export const initialHours = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00'];
 export const initialRooms = [];
 export const initialCourses = [];
+export const initialCourseBranchMappings = {};
 export const initialStudents = [];
 export const initialSchedule = [];
