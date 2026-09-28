@@ -181,12 +181,12 @@ export default function DashboardView() {
       </div>
 
       {/* Conflict Box (if any) */}
-      {conflicts.hasErrors ? (
+      {conflicts.hasErrors || conflicts.hasWarnings ? (
         <div className="p-5 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/60 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2 text-amber-900 dark:text-amber-200 font-bold text-sm">
               <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-              <span>Dikkat: Sınav Takviminde Çakışmalar Tespit Edildi!</span>
+              <span>Dikkat: Sınav Takviminde Çakışma veya Uyarılar Var!</span>
             </div>
             <button
               onClick={() => setActiveTab('schedule')}
@@ -204,6 +204,16 @@ export default function DashboardView() {
             {conflicts.roomConflicts.map((rc, idx) => (
               <div key={idx} className="p-2.5 rounded-lg bg-white/70 dark:bg-slate-900/70 border border-amber-200 dark:border-amber-900/50">
                 <span className="font-bold">{rc.salon}:</span> {rc.message}
+              </div>
+            ))}
+            {conflicts.studentConflicts.map((sc, idx) => (
+              <div key={`student-${idx}`} className="p-2.5 rounded-lg bg-white/70 dark:bg-slate-900/70 border border-amber-200 dark:border-amber-900/50">
+                {sc.message}
+              </div>
+            ))}
+            {conflicts.warnings.map((warning, idx) => (
+              <div key={`warning-${warning.examId}-${warning.type}-${idx}`} className="p-2.5 rounded-lg bg-white/70 dark:bg-slate-900/70 border border-amber-200 dark:border-amber-900/50">
+                {warning.message}
               </div>
             ))}
           </div>

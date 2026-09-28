@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { exportToExcel } from '../utils/excelParser';
 import { getExamObservers } from '../utils/examRoles';
+import { normalizeExamType } from '../utils/examTypes';
 import {
   CalendarDays,
   Plus,
@@ -93,6 +94,7 @@ export default function ScheduleView() {
       'Sınav Saati': ex.saat,
       'Seviye': `${ex.seviye}. Sınıf`,
       'Ders Adı': ex.ders,
+      'Sınav Türü': normalizeExamType(ex.sinavTuru),
       'Öğrenci Sayısı': ex.ogrenciSayisi,
       'Sınav Yeri': ex.salon,
       '1. Komisyon Üyesi': ex.uye1,
@@ -213,7 +215,10 @@ export default function ScheduleView() {
       }
     });
     conflicts.warnings.forEach((w) => {
-      if (String(w.examId) === String(exam.id)) {
+      if (
+        String(w.examId) === String(exam.id)
+        || String(w.relatedExamId) === String(exam.id)
+      ) {
         warns.push(w.message);
       }
     });
@@ -400,6 +405,7 @@ export default function ScheduleView() {
                 <th className="p-3.5">Tarih & Saat</th>
                 <th className="p-3.5">Seviye</th>
                 <th className="p-3.5">Ders Adı</th>
+                <th className="p-3.5">Sınav Türü</th>
                 <th className="p-3.5 text-center">Öğr. Sayısı</th>
                 <th className="p-3.5">Sınav Salonu</th>
                 <th className="p-3.5">1. Komisyon Üyesi</th>
@@ -463,11 +469,22 @@ export default function ScheduleView() {
                         {exam.ders}
                       </div>
                       {hasWarning && (
-                        <div className="text-[11px] text-amber-600 dark:text-amber-400 flex items-center space-x-1 mt-1">
-                          <AlertTriangle className="w-3 h-3 shrink-0" />
-                          <span>{warnings[0]}</span>
+                        <div className="mt-1 space-y-1 text-[11px] text-amber-600 dark:text-amber-400">
+                          {warnings.map((warning, warningIndex) => (
+                            <div key={`${warning}-${warningIndex}`} className="flex items-start space-x-1">
+                              <AlertTriangle className="w-3 h-3 shrink-0" />
+                              <span>{warning}</span>
+                            </div>
+                          ))}
                         </div>
                       )}
+                    </td>
+
+                    {/* Exam type */}
+                    <td className="p-3.5">
+                      <span className="inline-block rounded-full bg-violet-50 px-2 py-0.5 text-[11px] font-semibold text-violet-700 dark:bg-violet-950/50 dark:text-violet-300">
+                        {normalizeExamType(exam.sinavTuru)}
+                      </span>
                     </td>
 
                     {/* Student count */}

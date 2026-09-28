@@ -1,4 +1,4 @@
-import { normalizeExamType } from './examTypes.js';
+import { normalizeExamType, requiresWrittenAndOralExams } from './examTypes.js';
 import { isAssignableTeacher } from './teacherEligibility.js';
 import { getExamObservers } from './examRoles.js';
 import { normalizeCourseKey, teacherMatchesCourseBranch } from './courseBranchMapping.js';
@@ -96,6 +96,39 @@ export function checkConflicts(schedule, students = [], observerThreshold = 30) 
     });
   });
 
+  const languageExamsByDay = new Map();
+  schedule.forEach((exam) => {
+    if (
+      !exam.tarih ||
+      !requiresWrittenAndOralExams(exam.ders) ||
+      !['Yazılı', 'Sözlü'].includes(normalizeExamType(exam.sinavTuru))
+    ) {
+      return;
+    }
+    const key = `${exam.tarih}_${Number(exam.seviye)}_${normalizeCourseKey(exam.ders)}`;
+    if (!languageExamsByDay.has(key)) languageExamsByDay.set(key, []);
+    languageExamsByDay.get(key).push(exam);
+  });
+
+  languageExamsByDay.forEach((exams) => {
+    const writtenExams = exams.filter((exam) => normalizeExamType(exam.sinavTuru) === 'Yazılı');
+    const oralExams = exams.filter((exam) => normalizeExamType(exam.sinavTuru) === 'Sözlü');
+    writtenExams.forEach((writtenExam) => {
+      oralExams.forEach((oralExam) => {
+        const message = `${writtenExam.ders} (${writtenExam.seviye}. sınıf) yazılı ve sözlü sınavları ${writtenExam.tarih} tarihinde planlanmış. Mümkünse farklı günlere alın.`;
+        warnings.push({
+          examId: oralExam.id,
+          relatedExamId: writtenExam.id,
+          ders: oralExam.ders,
+          tarih: oralExam.tarih,
+          saat: oralExam.saat,
+          type: 'dil_sinavi_ayni_gun',
+          message
+        });
+      });
+    });
+  });
+
   // Check student exam overlap
   if (students && students.length > 0) {
     const studentMap = {}; // no -> [{ examId, ders, tarih, saat }]
@@ -139,6 +172,7 @@ export function checkConflicts(schedule, students = [], observerThreshold = 30) 
     roomConflicts,
     studentConflicts,
     warnings,
+    hasWarnings: warnings.length > 0,
     hasErrors: teacherConflicts.length > 0 || roomConflicts.length > 0 || studentConflicts.length > 0
   };
 }

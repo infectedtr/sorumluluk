@@ -38,7 +38,7 @@ export default function Sidebar() {
       label: 'Sınav Programı & Takvim',
       icon: CalendarDays,
       badge: schedule.length,
-      hasAlert: conflicts.hasErrors
+      hasAlert: conflicts.hasErrors || conflicts.hasWarnings
     },
     {
       id: 'teachers',

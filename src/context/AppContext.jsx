@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { loadStoredData, saveStoredData, resetToAccessData } from '../data/storage';
 import { checkConflicts, calculateTeacherStats, autoAssignCommission } from '../utils/scheduler';
 import { isHeaderOrFooterLabel, formatEOkulClassName } from '../utils/excelParser';
-import { normalizeExamType } from '../utils/examTypes';
+import { getExamTypesForCourse, normalizeExamType } from '../utils/examTypes';
 import { normalizeCourseKey } from '../utils/courseBranchMapping';
 import { isAdministratorPosition, isAssignableTeacher, removeAdministratorAssignments } from '../utils/teacherEligibility';
 
@@ -336,7 +336,26 @@ export function AppProvider({ children }) {
       courseMap[courseKey].count++;
     });
 
-    const newCourses = Object.values(courseMap).map((c, idx) => ({
+    const syncedCourses = [];
+    const writtenOralCourses = new Map();
+    Object.values(courseMap).forEach((course) => {
+      const examTypes = getExamTypesForCourse(course.name, course.sinavTuru);
+      if (examTypes.length === 1) {
+        syncedCourses.push(course);
+        return;
+      }
+      const key = `${normalizeCourseKey(course.name)}_${Number(course.seviye)}`;
+      const existing = writtenOralCourses.get(key);
+      if (!existing || course.count > existing.count) {
+        writtenOralCourses.set(key, course);
+      }
+    });
+    writtenOralCourses.forEach((course) => {
+      getExamTypesForCourse(course.name, course.sinavTuru).forEach((sinavTuru) => {
+        syncedCourses.push({ ...course, sinavTuru });
+      });
+    });
+    const newCourses = syncedCourses.map((c, idx) => ({
       id: idx + 1,
       name: c.name,
       seviye: c.seviye,

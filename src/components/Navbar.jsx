@@ -49,7 +49,7 @@ export default function Navbar() {
         <div className="flex items-center space-x-2 sm:space-x-3">
           
           {/* Conflict Alert Indicator */}
-          {conflicts.hasErrors ? (
+          {conflicts.hasErrors || conflicts.hasWarnings ? (
             <button
               onClick={() => setActiveTab('schedule')}
               className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 text-xs font-medium hover:bg-amber-500/20 transition-all animate-pulse"
@@ -57,7 +57,7 @@ export default function Navbar() {
             >
               <AlertTriangle className="w-4 h-4 text-amber-500" />
               <span className="hidden sm:inline">
-                {conflicts.teacherConflicts.length + conflicts.roomConflicts.length} Çakışma!
+                {conflicts.teacherConflicts.length + conflicts.roomConflicts.length + conflicts.studentConflicts.length + conflicts.warnings.length} Çakışma / Uyarı
               </span>
             </button>
           ) : (
