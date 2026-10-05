@@ -115,6 +115,14 @@ export default function Sidebar() {
       icon: Database,
       badge: null,
       color: 'from-slate-500 to-slate-600'
+    },
+    {
+      id: 'guide',
+      label: 'Kullanım Kılavuzu & Rehber',
+      icon: BookOpen,
+      badge: 'Rehber',
+      badgeColor: 'blue',
+      color: 'from-sky-500 to-blue-600'
     }
   ];
 
@@ -348,14 +356,28 @@ export default function Sidebar() {
             <div className="flex items-center space-x-1.5 text-slate-500 dark:text-slate-500 mb-1">
               <span
                 className="w-1.5 h-1.5 rounded-full animate-glow-pulse"
-                style={{ background: 'linear-gradient(135deg, #f43f5e, #f97316)' }}
+                style={{ background: 'linear-gradient(135deg, #10b981, #06b6d4)' }}
                 aria-hidden="true"
               />
-              <span className="font-medium uppercase tracking-wider text-[9px]">Program Sahibi</span>
+              <span className="font-medium uppercase tracking-wider text-[9px]">Sürüm Bilgisi</span>
             </div>
-            <p className="text-xs font-bold text-slate-800 dark:text-slate-200 tracking-tight">
-              S.Gültekin KADAYİFCİ
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200 tracking-tight font-mono">
+                v1.0.0 (Release)
+              </p>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold border border-emerald-500/20">
+                Kararlı
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent('check-app-update'))}
+              className="mt-2 w-full py-1.5 px-2 rounded-lg bg-slate-200/60 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700 text-[10px] font-semibold text-slate-700 dark:text-slate-300 transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+              title="Yeni sürüm olup olmadığını kontrol et"
+            >
+              <span className="text-emerald-600 dark:text-emerald-400 font-bold">Güncellemeleri Denetle</span>
+            </button>
           </div>
         </div>
       </div>

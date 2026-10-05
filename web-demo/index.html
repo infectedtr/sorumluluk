@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEB Sorumluluk Sınavları Sistemi — Resmi İndirme ve Canlı Demo</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23e11d48'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+  
+  <!-- Plus Jakarta Sans & Inter Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              500: '#f43f5e',
+              600: '#e11d48',
+              700: '#be123c',
+              800: '#9f1239',
+              900: '#881337',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom utility styles -->
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glow-effect {
+      background: radial-gradient(circle at 50% 0%, rgba(225, 29, 72, 0.15) 0%, transparent 70%);
+    }
+    .glass {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0.5);
+      border-radius: 9999px;
+    }
+    .watermark-demo {
+      position: relative;
+    }
+    .watermark-demo::after {
+      content: "DEMO SÜRÜM — EN FAZLA 5 SINAV";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-25deg);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: rgba(244, 63, 94, 0.12);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: white !important; color: black !important; }
+    }
+  </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen selection:bg-rose-500 selection:text-white">
+
+  <!-- Üst Duyuru Barı (Demo ve Tam Sürüm İndirme) -->
+  <div class="bg-gradient-to-r from-rose-700 via-purple-700 to-indigo-700 px-4 py-2 text-xs font-semibold text-white shadow-lg no-print">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div class="flex items-center gap-2">
+        <span class="px-2 py-0.5 rounded-full bg-white/20 text-white font-extrabold uppercase text-[10px] tracking-wider">
+          2025-2026 MEB
+        </span>
+        <span>MEB Sorumluluk Sınavları Sistemi <strong>v1.0.0 Kararlı Sürüm</strong> yayınlandı!</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="#demo" class="px-3 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold transition-colors">
+          Tarayıcıda Canlı Dene ➔
+        </a>
+        <a href="#download" class="px-3 py-1 rounded-lg bg-white text-rose-700 font-extrabold hover:bg-rose-50 transition-colors shadow">
+          Windows İndir (.exe) 🚀
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ana Navigasyon -->
+  <nav class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/85 border-b border-slate-800/80 transition-all no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 via-red-500 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-500/25 group-hover:scale-105 transition-transform text-white font-extrabold">
+            M
+          </div>
+          <div>
+            <span class="font-extrabold text-base tracking-tight text-white group-hover:text-rose-300 transition-colors flex items-center gap-1.5">
+              MEB Sorumluluk<span class="text-rose-500 font-mono text-xs">.exe</span>
+            </span>
+            <span class="text-[10px] text-slate-400 block -mt-0.5 font-medium">Sınav Planlama &amp; Yönetim</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <div class="hidden lg:flex items-center gap-7 text-xs font-semibold text-slate-300">
+          <a href="#demo" class="text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition-colors font-bold">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+            Canlı Demo (5 Sınav)
+          </a>
+          <a href="#features" class="hover:text-white transition-colors">Özellikler</a>
+          <a href="#requirements" class="hover:text-white transition-colors">Gereksinimler</a>
+          <a href="#changelog" class="hover:text-white transition-colors">Sürüm Notları</a>
+          <a href="#faq" class="hover:text-white transition-colors">SSS</a>
+        </div>
+
+        <!-- Right Action Button -->
+        <div class="flex items-center gap-3">
+          <a href="#demo" class="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all">
+            <i data-lucide="play-circle" class="w-4 h-4 text-amber-400"></i>
+            <span>Demoyu Aç</span>
+          </a>
+          <a href="#download" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 transition-all active:scale-95">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Hemen İndir</span>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <header class="relative pt-16 pb-16 lg:pt-24 lg:pb-20 overflow-hidden glow-effect border-b border-slate-900 no-print">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      
+      <!-- Sürüm Etiketi -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-slate-300 text-xs font-medium mb-6 shadow-sm">
+        <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="font-mono text-rose-300 font-bold">v1.0.0 Kararlı Sürüm</span>
+        <span class="text-slate-500">•</span>
+        <span>Windows 10 / 11 Destekli</span>
+      </div>
+
+      <!-- Ana Başlık & Açıklama -->
+      <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight max-w-4xl mx-auto">
+        MEB Sorumluluk Sınavlarını <br class="hidden sm:inline" />
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-amber-300 to-sky-400">
+          dakikalar içinde, sıfır çakışmayla planlayın.
+        </span>
+      </h1>
+      
+      <p class="mt-6 text-sm sm:text-base lg:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed">
+        e-Okul Excel listelerini saniyeler içinde içeri aktarın, öğretmen komisyon ve gözetmenlerini adilce dağıtın, 
+        <strong>9 resmi MEB evrakını</strong> tek tıkla yazdırın. Yerel bilgisayarınızda çalışan bağımsız ve güvenli masaüstü çözümü.
+      </p>
+
+      <!-- İndirme & Canlı Demo Aksiyon Butonları -->
+      <div id="download" class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <!-- ANA İNDİRME BUTONU -->
+        <a id="downloadBtn" 
+           href="https://github.com/infectedtr/releases/releases/download/sorumluluk/MEB.Sorumluluk.Sinavlari.Sistemi.Setup.1.0.0.exe" 
+           class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-semibold text-base shadow-xl shadow-rose-600/30 flex items-center justify-center gap-3 transition-all transform hover:-translate-y-0.5 active:translate-y-0">
+          <i data-lucide="download" class="w-6 h-6"></i>
+          <span class="text-left">
+            <span class="block text-xs uppercase tracking-wider font-mono text-rose-200">Doğrudan Windows Kurulumu</span>
+            <span class="text-base font-extrabold">MEB Sorumluluk İndir (.exe)</span>
+          </span>
+        </a>
+
+        <!-- ÇEVRİMİÇİ CANLI DEMO BUTONU -->
+        <a href="#demo" class="w-full sm:w-auto px-7 py-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-amber-500/30 font-bold text-sm flex items-center justify-center gap-2.5 transition-all shadow-lg hover:border-amber-400">
+          <i data-lucide="play" class="w-5 h-5 text-amber-400 fill-amber-400"></i>
+          <span>Tarayıcıda Canlı Dene (5 Sınav)</span>
+        </a>
+      </div>
+
+      <!-- Dosya Bilgileri Özeti -->
+      <div class="mt-5 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-slate-400">
+        <span class="flex items-center gap-1.5"><i data-lucide="hard-drive" class="w-3.5 h-3.5 text-slate-500"></i> Boyut: ~65 MB</span>
+        <span>•</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="cpu" class="w-3.5 h-3.5 text-slate-500"></i> x64 Uyumlu</span>
+        <span>•</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i> %100 Çevrimdışı &amp; KVKK Güvenli</span>
+        <span>•</span>
+        <span class="flex items-center gap-1.5"><i data-lucide="file-check" class="w-3.5 h-3.5 text-sky-400"></i> 9 Resmi MEB Raporu</span>
+      </div>
+
+      <!-- Windows Pencere Mockup Görseli -->
+      <div class="mt-12 max-w-4xl mx-auto rounded-3xl border border-slate-800 bg-slate-900/60 p-2.5 shadow-2xl shadow-rose-950/30">
+        <!-- Windows Pencere Üst Çubuğu -->
+        <div class="flex items-center justify-between px-4 py-2.5 border-b border-slate-800/80 bg-slate-950/80 rounded-t-2xl text-xs text-slate-400">
+          <div class="flex items-center gap-2">
+            <div class="w-3.5 h-3.5 rounded-full bg-rose-600/80 flex items-center justify-center text-[8px] font-bold text-white">M</div>
+            <span class="font-bold text-slate-200">MEB Sorumluluk Sınavları Sistemi — v1.0.0 [Kararlı]</span>
+          </div>
+          <!-- Windows Simge Durumu Butonları -->
+          <div class="flex items-center gap-3">
+            <span class="w-2.5 h-0.5 bg-slate-600 block"></span>
+            <span class="w-2.5 h-2.5 border border-slate-600 block"></span>
+            <span class="text-slate-500 font-mono leading-none text-base">&times;</span>
+          </div>
+        </div>
+
+        <!-- Mockup İçeriği -->
+        <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 rounded-b-2xl p-6 sm:p-10 text-center overflow-hidden">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+            <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4">
+              <span class="text-xs text-slate-400 uppercase tracking-wider font-mono">Otomatik Dağıtım</span>
+              <p class="text-2xl font-extrabold text-white mt-1">0 Çakışma</p>
+              <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+                <div class="bg-emerald-500 h-full w-[100%]"></div>
+              </div>
+            </div>
+            <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4">
+              <span class="text-xs text-slate-400 uppercase tracking-wider font-mono">e-Okul Excel Aktarım</span>
+              <p class="text-2xl font-extrabold text-white mt-1">&lt; 2 Saniye</p>
+              <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+                <div class="bg-rose-500 h-full w-[95%]"></div>
+              </div>
+            </div>
+            <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-4">
+              <span class="text-xs text-slate-400 uppercase tracking-wider font-mono">Resmi MEB Çıktısı</span>
+              <p class="text-2xl font-extrabold text-sky-400 mt-1">9 A4 Evrakı</p>
+              <div class="w-full bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+                <div class="bg-sky-500 h-full w-[100%]"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 border border-dashed border-slate-800 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-900/40">
+            <div class="flex items-center gap-3 text-left">
+              <div class="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
+                <i data-lucide="sparkles" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h3 class="font-bold text-white text-sm">Hemen Aşağıda Canlı Olarak Deneyin</h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  Tarayıcınızda 5 sınavlık demo kotasıyla komisyonları dağıtın ve resmi evrak baskılarını görün.
+                </p>
+              </div>
+            </div>
+            <a href="#demo" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs transition-colors shadow flex items-center gap-1.5 shrink-0">
+              <span>Aşağı Kaydır</span>
+              <i data-lucide="arrow-down" class="w-4 h-4"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- BİRLEŞTİRİLMİŞ İNTERAKTİF CANLI DEMO ALANI -->
+  <!-- ========================================== -->
+  <section id="demo" class="py-16 bg-slate-950 border-b border-slate-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+      <!-- Demo Başlık Banner -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold mb-2">
+            <span>🌐</span> Çevrimiçi İnteraktif Web Demosu
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            MEB Sınav Planlayıcıyı Canlı Test Edin
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Bu demoda en fazla <strong>5 sınav</strong> ekleyebilir, e-Okul veri aktarımını deneyebilir ve resmi evrak önizlemesini görebilirsiniz.
+          </p>
+        </div>
+
+        <!-- Demo Kota Göstergesi & Sınav Ekleme -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800">
+            <span class="text-xs text-slate-400 font-medium">Demo Kotası:</span>
+            <span id="quotaBadge" class="text-xs font-extrabold text-amber-400 font-mono">3 / 5</span>
+            <div class="w-16 bg-slate-800 h-2 rounded-full overflow-hidden ml-1">
+              <div id="quotaBar" class="bg-amber-500 h-full transition-all duration-300" style="width: 60%;"></div>
+            </div>
+          </div>
+
+          <button onclick="handleAddNewExam()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all shadow-lg shadow-rose-600/30 flex items-center gap-1.5 active:scale-95">
+            <span>➕</span> Sınav Ekle
+          </button>
+        </div>
+      </div>
+
+      <!-- Demo Sekmeleri (Tabs) -->
+      <div class="flex items-center gap-1.5 overflow-x-auto text-xs font-semibold py-1.5 border-b border-slate-800/80 custom-scroll no-print">
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn px-4 py-2.5 rounded-xl text-white bg-slate-800 flex items-center gap-1.5 transition-all">
+          <span>📊</span> Gösterge Paneli
+        </button>
+        <button onclick="switchTab('schedule')" id="tab-schedule" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+          <span>📅</span> Sınav Takvimi
+        </button>
+        <button onclick="switchTab('teachers')" id="tab-teachers" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+          <span>👥</span> Öğretmenler &amp; Komisyon
+        </button>
+        <button onclick="switchTab('students')" id="tab-students" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+          <span>🎓</span> Öğrenci Listesi
+        </button>
+        <button onclick="switchTab('import')" id="tab-import" class="tab-btn px-4 py-2.5 rounded-xl text-emerald-400 hover:text-white flex items-center gap-1.5 border border-emerald-500/20 bg-emerald-500/5 transition-all font-bold">
+          <span>📥</span> e-Okul &amp; Excel Aktarımı (Tanıtım)
+        </button>
+        <button onclick="switchTab('reports')" id="tab-reports" class="tab-btn px-4 py-2.5 rounded-xl text-slate-400 hover:text-white flex items-center gap-1.5 transition-all">
+          <span>🖨️</span> Resmi Rapor Önizleme
+        </button>
+      </div>
+
+      <!-- 1. GÖSTERGE PANELİ (DASHBOARD) -->
+      <div id="view-dashboard" class="tab-view space-y-6">
+        
+        <!-- Hoş Geldin ve Demo Bilgi Kutusu -->
+        <div class="glass rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="space-y-2 max-w-xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold">
+              💡 Çevrimiçi Deneyim
+            </div>
+            <h3 class="text-2xl font-extrabold text-white tracking-tight">
+              Sorumluluk Sınavlarını Dakikalar İçinde Planlayın
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Bu web demosunda sistemin sınav takvimi yerleşimi, otomatik komisyon dağıtımı ve resmi MEB evrak tanzimi yeteneklerini 
+              <strong>5 sınava kadar</strong> ücretsiz deneyimleyebilirsiniz.
+            </p>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-3 min-w-[240px]">
+            <div class="flex items-center justify-between text-xs font-semibold">
+              <span class="text-slate-400">Demo Kota Durumu:</span>
+              <span id="dashQuotaText" class="text-amber-400 font-bold">3 / 5 Sınav</span>
+            </div>
+            <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+              <div id="dashQuotaBar" class="bg-gradient-to-r from-amber-500 to-rose-500 h-full transition-all duration-300" style="width: 60%;"></div>
+            </div>
+            <p class="text-[11px] text-slate-400 leading-tight">
+              Tam sürümde sınırsız sınav, 100+ öğretmen ve tek tıkla e-Okul Excel aktarımı bulunur.
+            </p>
+            <button onclick="openPurchaseModal()" class="w-full py-2 bg-gradient-to-r from-rose-600 to-orange-600 hover:from-rose-500 hover:to-orange-500 text-white font-bold text-xs rounded-xl shadow transition-all">
+              Tam Sürüme Yükselt 👑
+            </button>
+          </div>
+        </div>
+
+        <!-- İstatistik Sayaçları -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="glass p-4 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-400 font-medium">Planlanan Sınav</span>
+            <p id="statExamCount" class="text-2xl font-extrabold text-white mt-1">3</p>
+            <span class="text-[10px] text-amber-400">En fazla 5 Sınav</span>
+          </div>
+          <div class="glass p-4 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-400 font-medium">Toplam Öğrenci</span>
+            <p class="text-2xl font-extrabold text-sky-400 mt-1">42</p>
+            <span class="text-[10px] text-slate-400">Örnek Liste</span>
+          </div>
+          <div class="glass p-4 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-400 font-medium">Görevli Öğretmen</span>
+            <p class="text-2xl font-extrabold text-indigo-400 mt-1">12</p>
+            <span class="text-[10px] text-slate-400">Branş Dağılımlı</span>
+          </div>
+          <div class="glass p-4 rounded-2xl border border-slate-800">
+            <span class="text-xs text-slate-400 font-medium">Çakışma Durumu</span>
+            <p class="text-2xl font-extrabold text-emerald-400 mt-1">0</p>
+            <span class="text-[10px] text-emerald-400">Tamamen Sorunsuz</span>
+          </div>
+        </div>
+
+        <!-- Hızlı Aksiyonlar -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass p-5 rounded-2xl border border-slate-800 space-y-2">
+            <h4 class="font-bold text-sm text-white flex items-center gap-2">
+              <span>📅</span> Sınav Takvimi
+            </h4>
+            <p class="text-xs text-slate-400">Tarih, saat ve salon yerleşimlerini görüntüleyin, sınav ekleyin.</p>
+            <button onclick="switchTab('schedule')" class="text-xs font-bold text-rose-400 hover:underline inline-block pt-1">
+              Takvimi Aç ➔
+            </button>
+          </div>
+          <div class="glass p-5 rounded-2xl border border-slate-800 space-y-2">
+            <h4 class="font-bold text-sm text-white flex items-center gap-2">
+              <span>🪄</span> Otomatik Dağıtım
+            </h4>
+            <p class="text-xs text-slate-400">Öğretmenleri branşlarına ve sınav saatlerine göre tek tıkla eşleştirin.</p>
+            <button onclick="runDemoAutoAssign()" class="text-xs font-bold text-violet-400 hover:underline inline-block pt-1">
+              Simülasyonu Çalıştır ➔
+            </button>
+          </div>
+          <div class="glass p-5 rounded-2xl border border-emerald-500/30 bg-emerald-950/20 space-y-2">
+            <h4 class="font-bold text-sm text-emerald-400 flex items-center gap-2">
+              <span>📥</span> e-Okul &amp; Excel Aktarımı
+            </h4>
+            <p class="text-xs text-slate-400">Öğrenci ve öğretmen listelerini saniyeler içinde içeri aktarın.</p>
+            <button onclick="switchTab('import')" class="text-xs font-bold text-emerald-400 hover:underline inline-block pt-1">
+              Sistemi İncele &amp; Dene ➔
+            </button>
+          </div>
+          <div class="glass p-5 rounded-2xl border border-slate-800 space-y-2">
+            <h4 class="font-bold text-sm text-white flex items-center gap-2">
+              <span>🖨️</span> Resmi MEB Raporları
+            </h4>
+            <p class="text-xs text-slate-400">Sınav ilan çizelgesi ve tutanak belgelerinin baskı önizlemesi.</p>
+            <button onclick="switchTab('reports')" class="text-xs font-bold text-sky-400 hover:underline inline-block pt-1">
+              Raporlara Git ➔
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 2. SINAV TAKVİMİ (SCHEDULE) -->
+      <div id="view-schedule" class="tab-view hidden space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
+          <div>
+            <h3 class="text-lg font-bold text-white">Sorumluluk Sınav Programı</h3>
+            <p class="text-xs text-slate-400">Demo kapsamında en fazla 5 sınav planlanabilir.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="runDemoAutoAssign()" class="px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold transition-all shadow flex items-center gap-1.5">
+              <span>🪄</span> Komisyonları Otomatik Dağıt
+            </button>
+            <button onclick="handleAddNewExam()" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all shadow flex items-center gap-1.5">
+              <span>➕</span> Yeni Sınav Ekle
+            </button>
+          </div>
+        </div>
+
+        <!-- Sınav Listesi Kartları -->
+        <div id="examsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Javascript ile doldurulur -->
+        </div>
+      </div>
+
+      <!-- 3. ÖĞRETMENLER & KOMİSYON -->
+      <div id="view-teachers" class="tab-view hidden space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-white">Öğretmen Kadrosu &amp; Komisyon Görevleri</h3>
+            <p class="text-xs text-slate-400">Örnek öğretmen listesi ve atanan sınav görevleri.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="switchTab('import'); setImportType('teachers');" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow flex items-center gap-1.5">
+              <span>📥</span> Excel'den Kadro Aktarımı (Tanıtım)
+            </button>
+            <span class="text-xs px-2.5 py-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-bold">
+              <span id="teacherCountBadge">12</span> Öğretmen
+            </span>
+          </div>
+        </div>
+
+        <div class="glass rounded-2xl overflow-hidden border border-slate-800">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-3.5 font-bold">Öğretmen Adı Soyadı</th>
+                  <th class="p-3.5 font-bold">Branş</th>
+                  <th class="p-3.5 font-bold">Komisyon Görevi</th>
+                  <th class="p-3.5 font-bold">Gözetmenlik</th>
+                  <th class="p-3.5 font-bold text-right">Durum</th>
+                </tr>
+              </thead>
+              <tbody id="teachersTbody" class="divide-y divide-slate-800/60 text-slate-300">
+                <!-- JS ile dolar -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. ÖĞRENCİLER -->
+      <div id="view-students" class="tab-view hidden space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-white">Öğrenci Sorumluluk Listesi (e-Okul Örneği)</h3>
+            <p class="text-xs text-slate-400">Sorumlu olduğu dersler ve sınıf seviyeleri.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="switchTab('import'); setImportType('students');" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow flex items-center gap-1.5">
+              <span>📥</span> e-Okul'dan Öğrenci Aktar (Tanıtım)
+            </button>
+            <span class="text-xs px-2.5 py-2 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 font-bold">
+              <span id="studentCountBadge">42</span> Öğrenci Kayıtlı
+            </span>
+          </div>
+        </div>
+
+        <div class="glass rounded-2xl overflow-hidden border border-slate-800">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900/80 text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-3.5 font-bold">Okul No</th>
+                  <th class="p-3.5 font-bold">Öğrenci Adı Soyadı</th>
+                  <th class="p-3.5 font-bold">Sınıf</th>
+                  <th class="p-3.5 font-bold">Sorumlu Olduğu Ders</th>
+                  <th class="p-3.5 font-bold text-right">Sınav Salonu</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTbody" class="divide-y divide-slate-800/60 text-slate-300">
+                <!-- JS ile dolar -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. VERİ İÇE AKTARMA MERKEZİ (IMPORT TANITIM) -->
+      <div id="view-import" class="tab-view hidden space-y-6">
+        
+        <!-- Başlık ve Tanıtım Hero Alanı -->
+        <div class="glass rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-slate-900 via-emerald-950/30 to-slate-900 border border-emerald-500/20 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="space-y-2 max-w-2xl">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold">
+              📥 e-Okul &amp; MEBBİS Akıllı Entegrasyon Sistemi
+            </div>
+            <h3 class="text-2xl font-extrabold text-white tracking-tight">
+              Manuel Veri Girişine Son: Tek Tıkla Excel'den Aktarın
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              e-Okul Sorumluluk Sınav Listesi'ni veya MEBBİS Öğretmen Kadrosu Excel çıktısını doğrudan sisteme aktarın. 
+              Algoritmamız sütunları, sınıf düzeylerini ve sorumlu dersleri saniyeler içinde otomatik ayrıştırır.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 space-y-2 min-w-[220px]">
+            <div class="text-xs font-bold text-slate-300">⚡ Tam Sürüm Gücü:</div>
+            <ul class="text-[11px] text-slate-400 space-y-1.5">
+              <li class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> 1.000+ Öğrenci tek saniyede</li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> Bozuk e-Okul Excel onarımı</li>
+              <li class="flex items-center gap-1.5"><span class="text-emerald-400">✓</span> Otomatik Branş Eşleme</li>
+            </ul>
+            <button onclick="openPurchaseModal()" class="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow transition-all">
+              Tam Sürümü İncele 🚀
+            </button>
+          </div>
+        </div>
+
+        <!-- Alt Sekmeler: Öğrenci vs Öğretmen -->
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+          <button onclick="setImportType('students')" id="importTab-students" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-lg transition-all flex items-center gap-2">
+            <span>🎓</span> e-Okul Öğrenci ve Sorumluluk Listesi
+          </button>
+          <button onclick="setImportType('teachers')" id="importTab-teachers" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-white transition-all flex items-center gap-2">
+            <span>👥</span> MEBBİS / Excel Öğretmen Kadrosu
+          </button>
+        </div>
+
+        <!-- Sistem Yetenekleri Kartları -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass p-4 rounded-2xl border border-slate-800 space-y-1.5">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-sm">1</div>
+            <h4 class="font-bold text-white text-xs">Akıllı Sütun Tespiti</h4>
+            <p class="text-[11px] text-slate-400 leading-normal">T.C., Numara, Ad Soyad, Sınıf ve Ders sütunlarını başlık sırası ne olursa olsun otomatik tanır.</p>
+          </div>
+          <div class="glass p-4 rounded-2xl border border-slate-800 space-y-1.5">
+            <div class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center font-bold text-sm">2</div>
+            <h4 class="font-bold text-white text-xs">Ders &amp; Seviye Ayıklama</h4>
+            <p class="text-[11px] text-slate-400 leading-normal">"Fizik 10" veya "Tarih 9. Sınıf" metinlerini analiz edip ders adı ile sınıf seviyesini birbirinden ayırır.</p>
+          </div>
+          <div class="glass p-4 rounded-2xl border border-slate-800 space-y-1.5">
+            <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-sm">3</div>
+            <h4 class="font-bold text-white text-xs">Sınavları Otomatik Türetme</h4>
+            <p class="text-[11px] text-slate-400 leading-normal">Öğrencilerin sorumlu kaldığı dersleri tarayarak "Açılması Gereken Sınavlar" listesini anında hazırlar.</p>
+          </div>
+          <div class="glass p-4 rounded-2xl border border-slate-800 space-y-1.5">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center font-bold text-sm">4</div>
+            <h4 class="font-bold text-white text-xs">Hata ve Boşluk Temizliği</h4>
+            <p class="text-[11px] text-slate-400 leading-normal">e-Okul raporundaki boşlukları, birleşik hücreleri ve mükerrer satırları otomatik süzer.</p>
+          </div>
+        </div>
+
+        <!-- İNTERAKTİF CANLI SİMÜLASYON KUTUSU -->
+        <div class="glass rounded-3xl p-6 border border-slate-700/80 space-y-6">
+          
+          <!-- Öğrenci Aktarım Paneli -->
+          <div id="importContent-students" class="space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h4 class="font-extrabold text-white text-base flex items-center gap-2">
+                  <span>📁</span> e-Okul Öğrenci Listesi Aktarım Simülasyonu
+                </h4>
+                <p class="text-xs text-slate-400">Aşağıdaki düğmeye tıklayarak gerçek bir e-Okul dosyasının nasıl ayrıştırıldığını canlı izleyin.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="simulateStudentImport()" id="btnSimulateStudent" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 flex items-center gap-2 active:scale-95 transition-all">
+                  <span>✨</span> Örnek e-Okul Dosyasını Canlı Test Et
+                </button>
+              </div>
+            </div>
+
+            <!-- Yükleme / İlerleme Çubuğu -->
+            <div id="studentImportProgress" class="hidden p-4 rounded-2xl bg-slate-900 border border-emerald-500/30 space-y-2">
+              <div class="flex items-center justify-between text-xs font-semibold">
+                <span id="studentProgressStep" class="text-emerald-400">e-Okul Excel dosyası okunuyor...</span>
+                <span id="studentProgressPct" class="text-white font-mono">0%</span>
+              </div>
+              <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                <div id="studentProgressBar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Canlı Ayrıştırma Sonucu & Tablo Önizleme -->
+            <div id="studentPreviewContainer" class="hidden space-y-4">
+              <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 text-xs text-emerald-300 font-medium">
+                  <span class="text-lg">✅</span>
+                  <span><strong>Başarılı!</strong> 42 Öğrenci Kaydı, 4 Sınıf Seviyesi ve 6 Farklı Sorumluluk Dersi Otomatik Tanındı.</span>
+                </div>
+                <button onclick="applyImportedStudentsToDemo()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow flex items-center gap-1.5 transition-colors">
+                  <span>➕</span> Demo Öğrenci Listesine Aktar
+                </button>
+              </div>
+
+              <!-- Ayrıştırılan Tablo -->
+              <div class="overflow-x-auto rounded-xl border border-slate-800">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                    <tr>
+                      <th class="p-3 font-bold">Okul No</th>
+                      <th class="p-3 font-bold">Öğrenci Ad Soyad</th>
+                      <th class="p-3 font-bold">Mevcut Sınıf</th>
+                      <th class="p-3 font-bold">Algılanan Ders</th>
+                      <th class="p-3 font-bold">Ders Seviyesi</th>
+                      <th class="p-3 font-bold text-right">Eşleşme Durumu</th>
+                    </tr>
+                  </thead>
+                  <tbody id="studentParsedPreviewTbody" class="divide-y divide-slate-800/60 text-slate-300">
+                    <!-- JS ile dolar -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Boş Durum Kutusu -->
+            <div id="studentEmptyBox" class="border-2 border-dashed border-slate-700/80 rounded-2xl p-8 text-center space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto text-xl">
+                📊
+              </div>
+              <h4 class="text-sm font-bold text-white">e-Okul Excel Çıktınızı Sürükleyip Bırakın</h4>
+              <p class="text-xs text-slate-400 max-w-md mx-auto">
+                Sistem .xlsx ve .xls dosyalarını otomatik okur. Test etmek için yukarıdaki <strong>"Örnek e-Okul Dosyasını Canlı Test Et"</strong> butonuna basın.
+              </p>
+            </div>
+          </div>
+
+          <!-- Öğretmen Aktarım Paneli -->
+          <div id="importContent-teachers" class="hidden space-y-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h4 class="font-extrabold text-white text-base flex items-center gap-2">
+                  <span>👥</span> MEBBİS / Excel Öğretmen Kadrosu Aktarım Simülasyonu
+                </h4>
+                <p class="text-xs text-slate-400">Öğretmen listesini ve branşları tek tıkla sisteme yükleyip komisyon dağıtımına hazırlayın.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="simulateTeacherImport()" id="btnSimulateTeacher" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/20 flex items-center gap-2 active:scale-95 transition-all">
+                  <span>✨</span> Örnek Öğretmen Listesini Test Et
+                </button>
+              </div>
+            </div>
+
+            <!-- Öğretmen İlerleme Çubuğu -->
+            <div id="teacherImportProgress" class="hidden p-4 rounded-2xl bg-slate-900 border border-indigo-500/30 space-y-2">
+              <div class="flex items-center justify-between text-xs font-semibold">
+                <span id="teacherProgressStep" class="text-indigo-400">MEBBİS öğretmen listesi taranıyor...</span>
+                <span id="teacherProgressPct" class="text-white font-mono">0%</span>
+              </div>
+              <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                <div id="teacherProgressBar" class="bg-indigo-500 h-full transition-all duration-300" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <!-- Öğretmen Tablo Önizleme -->
+            <div id="teacherPreviewContainer" class="hidden space-y-4">
+              <div class="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 text-xs text-indigo-300 font-medium">
+                  <span class="text-lg">✅</span>
+                  <span><strong>Başarılı!</strong> 12 Öğretmen ve 8 Farklı Branş Başarıyla Tanımlandı.</span>
+                </div>
+                <button onclick="applyImportedTeachersToDemo()" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow flex items-center gap-1.5 transition-colors">
+                  <span>➕</span> Demo Öğretmen Kadrosuna Yansıt
+                </button>
+              </div>
+
+              <div class="overflow-x-auto rounded-xl border border-slate-800">
+                <table class="w-full text-left text-xs">
+                  <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                    <tr>
+                      <th class="p-3 font-bold">Öğretmen Adı Soyadı</th>
+                      <th class="p-3 font-bold">Branş</th>
+                      <th class="p-3 font-bold">Maks. Görev Kotası</th>
+                      <th class="p-3 font-bold text-right">Eşleşen Sınav Dersleri</th>
+                    </tr>
+                  </thead>
+                  <tbody id="teacherParsedPreviewTbody" class="divide-y divide-slate-800/60 text-slate-300">
+                    <!-- JS ile dolar -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Öğretmen Boş Kutu -->
+            <div id="teacherEmptyBox" class="border-2 border-dashed border-slate-700/80 rounded-2xl p-8 text-center space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mx-auto text-xl">
+                👥
+              </div>
+              <h4 class="text-sm font-bold text-white">Öğretmen Excel Dosyasını Sürükleyin</h4>
+              <p class="text-xs text-slate-400 max-w-md mx-auto">
+                Ad Soyad ve Branş sütunlarını içerir. Test etmek için <strong>"Örnek Öğretmen Listesini Test Et"</strong> butonuna basın.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- 6. RESMİ RAPOR ÖNİZLEME (WATERMARK DEMO) -->
+      <div id="view-reports" class="tab-view hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-bold text-white">MEB Resmi Sınav Raporu Önizleme</h3>
+            <p class="text-xs text-slate-400">Tam sürümde filigransız, A4 boyutunda 9 resmi evrak seti üretilir.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="window.print()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-700 flex items-center gap-1.5 transition-colors">
+              <span>🖨️</span> Yazdır (Önizleme)
+            </button>
+            <button onclick="openPurchaseModal()" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow flex items-center gap-1.5 transition-colors">
+              <span>📄</span> Filigransız Tam Rapor Al
+            </button>
+          </div>
+        </div>
+
+        <!-- Resmi Evrak Görünümü -->
+        <div class="p-8 bg-white text-slate-900 rounded-3xl shadow-2xl watermark-demo border border-slate-300 max-w-4xl mx-auto space-y-6">
+          <div class="text-center space-y-1 border-b pb-4 border-slate-300">
+            <p class="text-xs font-bold tracking-widest text-slate-600">T.C.</p>
+            <p class="text-xs font-bold tracking-wider text-slate-700">MİLLÎ EĞİTİM BAKANLIĞI</p>
+            <h4 class="text-sm font-extrabold text-slate-900">ÖRNEK ANADOLU LİSESİ MÜDÜRLÜĞÜ</h4>
+            <p class="text-xs font-bold text-rose-700 pt-1">2025-2026 EĞİTİM ÖĞRETİM YILI ŞUBAT DÖNEMİ SORUMLULUK SINAVLARI ÇİZELGESİ</p>
+          </div>
+
+          <table class="w-full text-left text-xs border border-slate-400 border-collapse">
+            <thead>
+              <tr class="bg-slate-100 border-b border-slate-400 font-bold text-slate-800">
+                <th class="p-2 border-r border-slate-400">S.No</th>
+                <th class="p-2 border-r border-slate-400">Tarih &amp; Saat</th>
+                <th class="p-2 border-r border-slate-400">Ders Adı &amp; Seviye</th>
+                <th class="p-2 border-r border-slate-400">Salon</th>
+                <th class="p-2 border-r border-slate-400">Komisyon Üyeleri</th>
+                <th class="p-2 text-center">Öğr. Sayısı</th>
+              </tr>
+            </thead>
+            <tbody id="reportTbody" class="divide-y divide-slate-300">
+              <!-- JS doldurur -->
+            </tbody>
+          </table>
+
+          <div class="flex justify-between items-end pt-8 text-xs font-semibold text-slate-800">
+            <div class="text-center">
+              <p>Müdür Yardımcısı</p>
+              <p class="mt-8 font-bold">Ali ÖZTÜRK</p>
+            </div>
+            <div class="text-center">
+              <p>UYGUNDUR</p>
+              <p class="text-[10px] text-slate-500">Okul Müdürü</p>
+              <p class="mt-6 font-bold">Mustafa YILMAZ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ÖNE ÇIKAN ÖZELLİKLER (FEATURES) -->
+  <section id="features" class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <h2 class="text-xs font-mono uppercase tracking-wider text-rose-400 font-bold">Öne Çıkan Özellikler</h2>
+      <p class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Neden MEB Sorumluluk Sistemi?</p>
+      <p class="text-slate-400 mt-3 text-sm">Okul idarecilerinin saatler süren manuel sınav çizelgeleme yükünü ortadan kaldıran profesyonel araç.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Feature 1 -->
+      <div class="rounded-3xl p-6 bg-slate-900/40 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/70 transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i data-lucide="sparkles" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Otomatik Komisyon Dağıtımı</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          Branş öğretmenlerini ilgili derslere tek tıkla yerleştirir. Saat çakışmalarını önler ve görev yükünü öğretmenler arasında adilce dengeler.
+        </p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="rounded-3xl p-6 bg-slate-900/40 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/70 transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">e-Okul &amp; Excel Entegrasyonu</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          e-Okul sorumluluk listesini doğrudan içeri aktarın. Ders adlarını, seviyeleri ve öğrencileri otomatik tanır, tek tek elle yazma zahmetini bitirir.
+        </p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="rounded-3xl p-6 bg-slate-900/40 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/70 transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i data-lucide="printer" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">9 Resmi MEB Rapor Seti</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          Sınav ilan çizelgesi, öğretmen tebliğ belgeleri, salon imza listeleri ve tutanaklar resmî MEB standartlarına tam uyumlu A4 baskıya hazırdır.
+        </p>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="rounded-3xl p-6 bg-slate-900/40 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/70 transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i data-lucide="shield-check" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">%100 Çevrimdışı &amp; KVKK</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          Öğrenci T.C. kimlik ve okul verileri hiçbir bulut sunucuya gitmez. Tamamen okulunuzdaki yerel bilgisayarda güvenle saklanır.
+        </p>
+      </div>
+
+      <!-- Feature 5 -->
+      <div class="rounded-3xl p-6 bg-slate-900/40 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/70 transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i data-lucide="clock" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Işık Hızında Başlatma</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          Sistem saniyeler içinde açılır. Arka planda kaynak tüketmeyen hafif ve kararlı Windows masaüstü mimarisi kullanır.
+        </p>
+      </div>
+
+      <!-- Feature 6 -->
+      <div class="rounded-3xl p-6 bg-slate-900/40 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/70 transition-all group">
+        <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i data-lucide="refresh-cw" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-2">Akıllı Online Güncelleme</h3>
+        <p class="text-sm text-slate-400 leading-relaxed">
+          Yeni MEB yönetmelik veya mevzuat değişikliklerinde uygulama içinden tek tıkla en güncel sürüme yükseltilebilir.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SİSTEM GEREKSİNİMLERİ (REQUIREMENTS) -->
+  <section id="requirements" class="py-16 bg-slate-900/30 border-y border-slate-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <h2 class="text-2xl font-bold text-white">Sistem Gereksinimleri</h2>
+        <p class="text-slate-400 text-sm mt-1">Uygulamanın okul bilgisayarlarında sorunsuz çalışması için gereken donanım özellikleri.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+          <span class="text-xs font-mono text-rose-400 block mb-1">İşletim Sistemi</span>
+          <span class="text-sm font-bold text-white">Windows 10 / 11</span>
+          <span class="text-xs text-slate-500 block mt-1">64-bit desteği</span>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+          <span class="text-xs font-mono text-rose-400 block mb-1">RAM Bellek</span>
+          <span class="text-sm font-bold text-white">En az 2 GB</span>
+          <span class="text-xs text-slate-500 block mt-1">4 GB önerilir</span>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+          <span class="text-xs font-mono text-rose-400 block mb-1">Depolama Alanı</span>
+          <span class="text-sm font-bold text-white">150 MB Boş Alan</span>
+          <span class="text-xs text-slate-500 block mt-1">SSD veya HDD</span>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900 border border-slate-800">
+          <span class="text-xs font-mono text-rose-400 block mb-1">Ek Yazılım</span>
+          <span class="text-sm font-bold text-white">Gerektirmez</span>
+          <span class="text-xs text-slate-500 block mt-1">Bağımsız (.exe)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SÜRÜM NOTLARI (CHANGELOG) -->
+  <section id="changelog" class="py-20 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-xs font-mono uppercase tracking-wider text-rose-400 font-bold">Geliştirme Geçmişi</h2>
+      <p class="text-3xl font-extrabold text-white mt-2">Sürüm Notları (Changelog)</p>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Current Release Card -->
+      <div class="rounded-3xl bg-slate-900/60 border border-rose-500/30 p-6 relative">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-4 mb-4">
+          <div class="flex items-center gap-3">
+            <span class="px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 font-mono text-xs font-bold border border-rose-500/30">v1.0.0 (Kararlı Sürüm)</span>
+            <span class="text-xs text-slate-400 font-mono">Yayınlanma: Eylül 2026</span>
+          </div>
+          <span class="text-xs font-mono text-emerald-400 flex items-center gap-1">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Resmî Sürüm
+          </span>
+        </div>
+
+        <h4 class="text-sm font-bold text-white mb-2">Bu Sürümdeki Yenilikler:</h4>
+        <ul class="text-sm text-slate-300 space-y-2 list-inside list-disc">
+          <li>MEB Ortaöğretim Kurumları Yönetmeliği Eylül / Şubat sorumluluk dönemi kuralları entegre edildi.</li>
+          <li>e-Okul Excel öğrenci ve MEBBİS öğretmen kadrosunu tek tıkla içe aktarma motoru eklendi.</li>
+          <li>Sıfır çakışmalı otomatik komisyon ve gözetmen dağıtım algoritması optimize edildi.</li>
+          <li>Yazdırılabilir 9 adet resmi MEB A4 evrak seti (Sınav İlan Çizelgesi, Komisyon İmza Sirküsü vb.) tamamlandı.</li>
+          <li>Cihaz bazlı çevrimdışı lisanslama ve otomatik güncelleme kontrolü aktif edildi.</li>
+        </ul>
+
+        <!-- SHA-256 Checksum -->
+        <div class="mt-4 pt-3 border-t border-slate-800/60 text-xs font-mono text-slate-500 flex flex-wrap items-center justify-between gap-2">
+          <span>SHA-256 Doğrulama Kodu:</span>
+          <span class="bg-slate-950 px-2 py-1 rounded border border-slate-800 text-slate-400 select-all">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIKÇA SORULAN SORULAR (FAQ) -->
+  <section id="faq" class="py-16 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-xs font-mono uppercase tracking-wider text-rose-400 font-bold">Destek &amp; Bilgi</h2>
+      <p class="text-3xl font-extrabold text-white mt-2">Sıkça Sorulan Sorular</p>
+    </div>
+
+    <div class="space-y-4">
+      <!-- FAQ 1 -->
+      <div class="faq-item rounded-2xl border border-slate-800 bg-slate-900/40 overflow-hidden">
+        <button class="faq-toggle w-full px-5 py-4 text-left flex items-center justify-between text-white font-bold text-sm hover:text-rose-300 transition-colors">
+          <span>Windows "SmartScreen kişisel bilgisayarınızı korudu" uyarısı verirse ne yapmalıyım?</span>
+          <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+        </button>
+        <div class="faq-content hidden px-5 pb-4 text-xs sm:text-sm text-slate-400 border-t border-slate-800/40 pt-3 leading-relaxed">
+          Yeni yayınlanan ve bağımsız dağıtılan kurumsal yazılımlarda Windows bu güvenlik uyarısını ilk indirmelerde gösterebilir. 
+          Kuruluma devam etmek için ekrandaki <strong>"Ek bilgi"</strong> bağlantısına tıklayıp ardından <strong>"Yine de çalıştır"</strong> butonuna basmanız yeterlidir. Yazılımımız tamamen temiz ve virüssüzdür.
+        </div>
+      </div>
+
+      <!-- FAQ 2 -->
+      <div class="faq-item rounded-2xl border border-slate-800 bg-slate-900/40 overflow-hidden">
+        <button class="faq-toggle w-full px-5 py-4 text-left flex items-center justify-between text-white font-bold text-sm hover:text-rose-300 transition-colors">
+          <span>e-Okul Excel dosyamı olduğu gibi yükleyebilir miyim?</span>
+          <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+        </button>
+        <div class="faq-content hidden px-5 pb-4 text-xs sm:text-sm text-slate-400 border-t border-slate-800/40 pt-3 leading-relaxed">
+          Evet! Sistemimiz e-Okul sisteminden indirdiğiniz "Sorumluluk Sınavı Öğrenci Listesi" Excel dosyasını doğrudan tanır. Sütunların başlık sırasını otomatik algılar ve ders seviyelerini (9, 10, 11, 12) kendisi ayrıştırır.
+        </div>
+      </div>
+
+      <!-- FAQ 3 -->
+      <div class="faq-item rounded-2xl border border-slate-800 bg-slate-900/40 overflow-hidden">
+        <button class="faq-toggle w-full px-5 py-4 text-left flex items-center justify-between text-white font-bold text-sm hover:text-rose-300 transition-colors">
+          <span>Uygulama internet bağlantısı gerektirir mi?</span>
+          <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+        </button>
+        <div class="faq-content hidden px-5 pb-4 text-xs sm:text-sm text-slate-400 border-t border-slate-800/40 pt-3 leading-relaxed">
+          Hayır. Tüm planlama, otomatik komisyon dağıtımı ve rapor baskısı %100 çevrimdışı çalışır. Sadece ilk lisans aktivasyonunda veya isteğe bağlı sürüm kontrollerinde anlık internete bağlanır.
+        </div>
+      </div>
+
+      <!-- FAQ 4 -->
+      <div class="faq-item rounded-2xl border border-slate-800 bg-slate-900/40 overflow-hidden">
+        <button class="faq-toggle w-full px-5 py-4 text-left flex items-center justify-between text-white font-bold text-sm hover:text-rose-300 transition-colors">
+          <span>Demo sürüm ile Tam Sürüm arasındaki fark nedir?</span>
+          <i data-lucide="chevron-down" class="faq-icon w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+        </button>
+        <div class="faq-content hidden px-5 pb-4 text-xs sm:text-sm text-slate-400 border-t border-slate-800/40 pt-3 leading-relaxed">
+          Bu sayfadaki web demoda en fazla 5 sınav planlanabilir ve rapor önizlemesi filigranlıdır. İndireceğiniz tam sürümde ise sınırsız sayıda sınav, 1.000+ öğrenci, sınırsız öğretmen ve filigransız resmî A4 MEB baskı seti bulunur.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SATIN AL / DEMO LİMİTİ MODALI -->
+  <div id="purchaseModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden animate-fadeIn no-print">
+    <div class="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl p-6 sm:p-8 space-y-6">
+      
+      <button onclick="closePurchaseModal()" class="absolute top-5 right-5 p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">
+        ✕
+      </button>
+
+      <div class="text-center space-y-2">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-600/30 to-amber-500/30 border border-rose-500/40 text-rose-400 flex items-center justify-center mx-auto text-2xl shadow-xl">
+          🔒
+        </div>
+        <h3 class="text-xl font-extrabold text-white tracking-tight">
+          Demo Sürüm Sınırına Ulaştınız
+        </h3>
+        <p class="text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
+          Bu çevrimiçi tanıtım sürümünde en fazla <strong>5 sınav</strong> planlanabilir. Sınırsız kullanım için Tam Sürüm'e geçin.
+        </p>
+      </div>
+
+      <!-- Karşılaştırma Listesi -->
+      <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5 text-xs">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-800 font-bold">
+          <span class="text-slate-400">Özellik</span>
+          <span class="text-rose-400">Demo</span>
+          <span class="text-emerald-400">Tam Sürüm</span>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>Sınav Sayısı Limiti</span>
+          <span class="text-rose-400 font-bold">Maks. 5</span>
+          <span class="text-emerald-400 font-bold">Sınırsız</span>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>Öğrenci &amp; Kadro Sayısı</span>
+          <span class="text-rose-400 font-bold">Kısıtlı</span>
+          <span class="text-emerald-400 font-bold">Sınırsız</span>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>e-Okul Excel Doğrudan Aktarım</span>
+          <span class="text-slate-500">Örnek Veri</span>
+          <span class="text-emerald-400 font-bold">Tek Tıkla Aktar</span>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>9 Resmi MEB Rapor Baskısı</span>
+          <span class="text-slate-500">Filigranlı</span>
+          <span class="text-emerald-400 font-bold">Filigransız Resmi PDF</span>
+        </div>
+        <div class="flex items-center justify-between text-slate-300">
+          <span>Yerel Bilgisayar &amp; Çevrimdışı</span>
+          <span class="text-slate-500">Yalnız Web</span>
+          <span class="text-emerald-400 font-bold">%100 Çevrimdışı Güvenli</span>
+        </div>
+      </div>
+
+      <!-- İletişim / Sipariş Butonları -->
+      <div class="space-y-2 pt-1">
+        <a href="#download" onclick="closePurchaseModal()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-bold text-xs shadow-lg shadow-rose-600/30 flex items-center justify-center gap-2 transition-all">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Tam Sürümü İndir (.exe)</span>
+        </a>
+        <button onclick="closePurchaseModal()" class="w-full py-2.5 text-center text-xs text-slate-400 hover:text-white transition-colors">
+          Demoyu İncelemeye Devam Et
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-900 bg-slate-950 py-12 text-slate-500 text-xs no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-7 h-7 rounded-lg bg-rose-600/30 flex items-center justify-center text-rose-400 font-bold text-xs">
+          M
+        </div>
+        <span>&copy; 2026 MEB Sorumluluk Sınavları Sistemi. Tüm hakları saklıdır.</span>
+      </div>
+
+      <!-- Alt Bağlantılar -->
+      <div class="flex items-center gap-6">
+        <a href="#demo" class="hover:text-slate-300 transition-colors">Canlı Demo</a>
+        <a href="#download" class="hover:text-slate-300 transition-colors">İndirme Bağlantısı</a>
+        <a href="#changelog" class="hover:text-slate-300 transition-colors">Sürüm Notları</a>
+        <a href="#faq" class="hover:text-slate-300 transition-colors">Destek &amp; SSS</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // FAQ Accordion Toggle
+    document.querySelectorAll('.faq-toggle').forEach(button => {
+      button.addEventListener('click', () => {
+        const content = button.nextElementSibling;
+        const icon = button.querySelector('.faq-icon');
+        const isOpen = !content.classList.contains('hidden');
+
+        document.querySelectorAll('.faq-content').forEach(c => c.classList.add('hidden'));
+        document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('rotate-180'));
+
+        if (!isOpen) {
+          content.classList.remove('hidden');
+          icon.classList.add('rotate-180');
+        }
+      });
+    });
+
+    // --- DEMO VERİTABANI & SİSTEMİ ---
+    let exams = [
+      { id: 1, ders: "Türk Dili ve Edebiyatı", seviye: "9. Sınıf", tarih: "09.02.2026", saat: "10:00", salon: "Salon 1 (A-101)", komisyon: ["Fatma YILDIZ", "Ahmet KAYA"], ogrSayisi: 18 },
+      { id: 2, ders: "Matematik", seviye: "10. Sınıf", tarih: "09.02.2026", saat: "13:30", salon: "Salon 2 (A-102)", komisyon: ["Murat ÇELİK", "Zeynep DEMİR"], ogrSayisi: 14 },
+      { id: 3, ders: "İngilizce", seviye: "11. Sınıf", tarih: "10.02.2026", saat: "10:00", salon: "Salon 1 (A-101)", komisyon: ["Elif ŞAHİN", "Burak KOÇ"], ogrSayisi: 10 }
+    ];
+
+    const teachers = [
+      { ad: "Fatma YILDIZ", brans: "Türk Dili ve Edebiyatı", gorev: 1, gozetmen: 0 },
+      { ad: "Ahmet KAYA", brans: "Türk Dili ve Edebiyatı", gorev: 1, gozetmen: 1 },
+      { ad: "Murat ÇELİK", brans: "Matematik", gorev: 1, gozetmen: 0 },
+      { ad: "Zeynep DEMİR", brans: "Matematik", gorev: 1, gozetmen: 1 },
+      { ad: "Elif ŞAHİN", brans: "İngilizce", gorev: 1, gozetmen: 0 },
+      { ad: "Burak KOÇ", brans: "İngilizce", gorev: 1, gozetmen: 1 },
+      { ad: "Hasan KILIÇ", brans: "Tarih", gorev: 0, gozetmen: 1 },
+      { ad: "Sevgi AYDIN", brans: "Coğrafya", gorev: 0, gozetmen: 1 },
+      { ad: "Kemal ARSLAN", brans: "Fizik", gorev: 0, gozetmen: 0 },
+      { ad: "Derya YILMAZ", brans: "Kimya", gorev: 0, gozetmen: 0 },
+      { ad: "Ömer POLAT", brans: "Biyoloji", gorev: 0, gozetmen: 0 },
+      { ad: "Ebru GÜLER", brans: "Felsefe", gorev: 0, gozetmen: 0 }
+    ];
+
+    const students = [
+      { no: "1042", ad: "Mehmet Can YILDIZ", sinif: "10-A", ders: "Türk Dili ve Edebiyatı (9)", salon: "Salon 1" },
+      { no: "1055", ad: "Ayşe Nur KARA", sinif: "10-B", ders: "Türk Dili ve Edebiyatı (9)", salon: "Salon 1" },
+      { no: "1102", ad: "Emre GÜNEŞ", sinif: "11-A", ders: "Matematik (10)", salon: "Salon 2" },
+      { no: "1118", ad: "Zehra BULUT", sinif: "11-C", ders: "Matematik (10)", salon: "Salon 2" },
+      { no: "1230", ad: "Burak YILMAZ", sinif: "12-B", ders: "İngilizce (11)", salon: "Salon 1" },
+      { no: "1245", ad: "Selin ŞEN", sinif: "12-C", ders: "İngilizce (11)", salon: "Salon 1" }
+    ];
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-view").forEach(el => el.classList.add("hidden"));
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.remove("text-white", "bg-slate-800");
+        btn.classList.add("text-slate-400");
+      });
+
+      const activeView = document.getElementById(`view-${tabId}`);
+      if (activeView) activeView.classList.remove("hidden");
+
+      const activeBtn = document.getElementById(`tab-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.add("text-white", "bg-slate-800");
+        activeBtn.classList.remove("text-slate-400");
+      }
+
+      if (tabId === "reports") renderReports();
+    }
+
+    function updateQuotaDisplay() {
+      const count = exams.length;
+      const quotaBadge = document.getElementById("quotaBadge");
+      const statExamCount = document.getElementById("statExamCount");
+      const dashQuotaText = document.getElementById("dashQuotaText");
+      const quotaBar = document.getElementById("quotaBar");
+      const dashQuotaBar = document.getElementById("dashQuotaBar");
+
+      if (quotaBadge) quotaBadge.innerText = `${count} / 5`;
+      if (statExamCount) statExamCount.innerText = count;
+      if (dashQuotaText) dashQuotaText.innerText = `${count} / 5 Sınav`;
+
+      const pct = (count / 5) * 100;
+      if (quotaBar) quotaBar.style.width = `${pct}%`;
+      if (dashQuotaBar) dashQuotaBar.style.width = `${pct}%`;
+
+      if (quotaBar) {
+        if (count >= 5) {
+          quotaBar.className = "bg-rose-500 h-full transition-all duration-300";
+        } else {
+          quotaBar.className = "bg-amber-500 h-full transition-all duration-300";
+        }
+      }
+    }
+
+    function renderExams() {
+      const container = document.getElementById("examsList");
+      if (!container) return;
+      container.innerHTML = "";
+
+      exams.forEach(ex => {
+        const card = document.createElement("div");
+        card.className = "glass p-5 rounded-2xl border border-slate-800 space-y-3 hover:border-slate-700 transition-all";
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 text-[10px] font-bold">${ex.seviye}</span>
+              <h4 class="text-sm font-bold text-white mt-1">${ex.ders}</h4>
+            </div>
+            <button onclick="handleDeleteExam(${ex.id})" class="text-slate-500 hover:text-rose-400 text-xs" title="Sil">✕</button>
+          </div>
+          <div class="text-xs text-slate-400 space-y-1">
+            <p>📅 <strong>Tarih:</strong> ${ex.tarih} - ${ex.saat}</p>
+            <p>🏫 <strong>Salon:</strong> ${ex.salon}</p>
+            <p>👥 <strong>Komisyon:</strong> ${ex.komisyon.join(", ")}</p>
+            <p>🎓 <strong>Öğrenci:</strong> ${ex.ogrSayisi} kişi</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      updateQuotaDisplay();
+    }
+
+    function handleAddNewExam() {
+      if (exams.length >= 5) {
+        openPurchaseModal();
+        return;
+      }
+
+      const sampleCourses = [
+        { ders: "Tarih", seviye: "9. Sınıf", salon: "Salon 3 (B-101)", komisyon: ["Hasan KILIÇ", "Sevgi AYDIN"], ogrSayisi: 12 },
+        { ders: "Fizik", seviye: "10. Sınıf", salon: "Salon 1 (A-101)", komisyon: ["Kemal ARSLAN", "Derya YILMAZ"], ogrSayisi: 8 }
+      ];
+
+      const nextSample = sampleCourses[exams.length - 3] || {
+        ders: "Coğrafya",
+        seviye: "11. Sınıf",
+        salon: "Salon 2 (A-102)",
+        komisyon: ["Sevgi AYDIN", "Ebru GÜLER"],
+        ogrSayisi: 15
+      };
+
+      exams.push({
+        id: Date.now(),
+        ...nextSample,
+        tarih: "11.02.2026",
+        saat: exams.length === 3 ? "11:00" : "14:00"
+      });
+
+      renderExams();
+      alert(`✅ Yeni sınav eklendi: ${nextSample.ders} (${nextSample.seviye})\nKota: ${exams.length} / 5 Sınav`);
+    }
+
+    function handleDeleteExam(id) {
+      exams = exams.filter(e => e.id !== id);
+      renderExams();
+    }
+
+    function runDemoAutoAssign() {
+      alert("🪄 Demo Otomatik Komisyon Dağıtım Algoritması Çalıştırıldı!\n\n• Tüm derslere branş öğretmenleri atandı.\n• Görev sayıları adil biçimde dengelendi.\n• Saat çakışmaları kontrol edildi (0 çakışma).");
+    }
+
+    function renderTeachers() {
+      const tbody = document.getElementById("teachersTbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      teachers.forEach(t => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="p-3.5 font-bold text-white">${t.ad}</td>
+          <td class="p-3.5 text-slate-400">${t.brans}</td>
+          <td class="p-3.5"><span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-bold">${t.gorev} Sınav</span></td>
+          <td class="p-3.5"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400">${t.gozetmen} Görev</span></td>
+          <td class="p-3.5 text-right"><span class="text-emerald-400 font-bold">Müsait</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderStudents() {
+      const tbody = document.getElementById("studentsTbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      students.forEach(s => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="p-3.5 font-mono font-bold text-amber-400">${s.no}</td>
+          <td class="p-3.5 font-bold text-white">${s.ad}</td>
+          <td class="p-3.5 text-slate-400">${s.sinif}</td>
+          <td class="p-3.5 text-slate-300">${s.ders}</td>
+          <td class="p-3.5 text-right font-medium text-slate-400">${s.salon}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderReports() {
+      const tbody = document.getElementById("reportTbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      exams.forEach((ex, idx) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="p-2 border-r border-slate-300 text-center font-bold">${idx + 1}</td>
+          <td class="p-2 border-r border-slate-300">${ex.tarih} ${ex.saat}</td>
+          <td class="p-2 border-r border-slate-300 font-bold">${ex.ders} (${ex.seviye})</td>
+          <td class="p-2 border-r border-slate-300">${ex.salon}</td>
+          <td class="p-2 border-r border-slate-300 text-[11px]">${ex.komisyon.join(" - ")}</td>
+          <td class="p-2 text-center font-bold">${ex.ogrSayisi}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- IMPORT SİMÜLASYONU ---
+    let currentImportType = 'students';
+
+    function setImportType(type) {
+      currentImportType = type;
+      const btnStudents = document.getElementById("importTab-students");
+      const btnTeachers = document.getElementById("importTab-teachers");
+      const contentStudents = document.getElementById("importContent-students");
+      const contentTeachers = document.getElementById("importContent-teachers");
+
+      if (type === 'students') {
+        btnStudents.className = "px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-lg transition-all flex items-center gap-2";
+        btnTeachers.className = "px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-white transition-all flex items-center gap-2";
+        contentStudents.classList.remove("hidden");
+        contentTeachers.classList.add("hidden");
+      } else {
+        btnTeachers.className = "px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-lg transition-all flex items-center gap-2";
+        btnStudents.className = "px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-400 hover:text-white transition-all flex items-center gap-2";
+        contentTeachers.classList.remove("hidden");
+        contentStudents.classList.add("hidden");
+      }
+    }
+
+    const sampleEOkulParsedData = [
+      { no: "1042", ad: "Mehmet Can YILDIZ", sinif: "10-A", ders: "Türk Dili ve Edebiyatı", seviye: "9. Sınıf", salon: "Salon 1 (A-101)" },
+      { no: "1055", ad: "Ayşe Nur KARA", sinif: "10-B", ders: "Türk Dili ve Edebiyatı", seviye: "9. Sınıf", salon: "Salon 1 (A-101)" },
+      { no: "1102", ad: "Emre GÜNEŞ", sinif: "11-A", ders: "Matematik", seviye: "10. Sınıf", salon: "Salon 2 (A-102)" },
+      { no: "1118", ad: "Zehra BULUT", sinif: "11-C", ders: "Matematik", seviye: "10. Sınıf", salon: "Salon 2 (A-102)" },
+      { no: "1230", ad: "Burak YILMAZ", sinif: "12-B", ders: "İngilizce", seviye: "11. Sınıf", salon: "Salon 1 (A-101)" },
+      { no: "1245", ad: "Selin ŞEN", sinif: "12-C", ders: "İngilizce", seviye: "11. Sınıf", salon: "Salon 1 (A-101)" },
+      { no: "1290", ad: "Kaan DEMİRTAŞ", sinif: "10-C", ders: "Tarih", seviye: "9. Sınıf", salon: "Salon 3 (B-101)" },
+      { no: "1314", ad: "Gamze POLAT", sinif: "11-B", ders: "Fizik", seviye: "10. Sınıf", salon: "Salon 1 (A-101)" }
+    ];
+
+    const sampleMebbisTeacherParsedData = [
+      { ad: "Fatma YILDIZ", brans: "Türk Dili ve Edebiyatı", kota: "4 Sınav", eslesenDers: "T.D. Edebiyatı (9, 10, 11)" },
+      { ad: "Ahmet KAYA", brans: "Türk Dili ve Edebiyatı", kota: "4 Sınav", eslesenDers: "T.D. Edebiyatı (9, 10, 11)" },
+      { ad: "Murat ÇELİK", brans: "Matematik", kota: "5 Sınav", eslesenDers: "Matematik (9, 10, 11, 12)" },
+      { ad: "Zeynep DEMİR", brans: "Matematik", kota: "5 Sınav", eslesenDers: "Matematik (9, 10, 11, 12)" },
+      { ad: "Elif ŞAHİN", brans: "İngilizce", kota: "4 Sınav", eslesenDers: "İngilizce (9, 10, 11)" },
+      { ad: "Burak KOÇ", brans: "İngilizce", kota: "4 Sınav", eslesenDers: "İngilizce (9, 10, 11)" },
+      { ad: "Hasan KILIÇ", brans: "Tarih", kota: "3 Sınav", eslesenDers: "Tarih, T.C. İnkılap Tarihi" },
+      { ad: "Kemal ARSLAN", brans: "Fizik", kota: "3 Sınav", eslesenDers: "Fizik (9, 10, 11)" }
+    ];
+
+    function simulateStudentImport() {
+      const emptyBox = document.getElementById("studentEmptyBox");
+      const progressBox = document.getElementById("studentImportProgress");
+      const previewBox = document.getElementById("studentPreviewContainer");
+      const stepText = document.getElementById("studentProgressStep");
+      const pctText = document.getElementById("studentProgressPct");
+      const bar = document.getElementById("studentProgressBar");
+
+      emptyBox.classList.add("hidden");
+      previewBox.classList.add("hidden");
+      progressBox.classList.remove("hidden");
+
+      bar.style.width = "20%";
+      pctText.innerText = "20%";
+      stepText.innerText = "📁 'e-Okul_Sorumluluk_Listesi_2026.xlsx' taranıyor...";
+
+      setTimeout(() => {
+        bar.style.width = "60%";
+        pctText.innerText = "60%";
+        stepText.innerText = "⚡ Sütunlar haritalanıyor (T.C., Okul No, Ad Soyad, Dersler)...";
+      }, 500);
+
+      setTimeout(() => {
+        bar.style.width = "85%";
+        pctText.innerText = "85%";
+        stepText.innerText = "🧠 Ders ve Sınıf düzeyleri ayrıştırılıyor (42 Kayıt)...";
+      }, 1000);
+
+      setTimeout(() => {
+        bar.style.width = "100%";
+        pctText.innerText = "100%";
+        stepText.innerText = "✅ Ayrıştırma tamamlandı!";
+
+        setTimeout(() => {
+          progressBox.classList.add("hidden");
+          previewBox.classList.remove("hidden");
+          renderStudentImportPreview();
+        }, 400);
+      }, 1500);
+    }
+
+    function renderStudentImportPreview() {
+      const tbody = document.getElementById("studentParsedPreviewTbody");
+      tbody.innerHTML = "";
+      sampleEOkulParsedData.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="p-3 font-mono font-bold text-amber-400">${item.no}</td>
+          <td class="p-3 font-bold text-white">${item.ad}</td>
+          <td class="p-3 text-slate-300"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold">${item.sinif}</span></td>
+          <td class="p-3 text-emerald-400 font-semibold">${item.ders}</td>
+          <td class="p-3 text-sky-400 font-medium">${item.seviye}</td>
+          <td class="p-3 text-right"><span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">✓ Eşleşti</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function applyImportedStudentsToDemo() {
+      sampleEOkulParsedData.slice(6).forEach(s => {
+        if (!students.some(existing => existing.no === s.no)) {
+          students.push({
+            no: s.no,
+            ad: s.ad,
+            sinif: s.sinif,
+            ders: `${s.ders} (${s.seviye.replace('. Sınıf', '')})`,
+            salon: s.salon
+          });
+        }
+      });
+
+      renderStudents();
+      const badge = document.getElementById("studentCountBadge");
+      if (badge) badge.innerText = students.length;
+      alert(`🎉 e-Okul verileri başarıyla demo listesine yansıtıldı!\nToplam ${students.length} öğrenci kayıtlı.\n'Öğrenci Listesi' sekmesine geçerek kontrol edebilirsiniz.`);
+    }
+
+    function simulateTeacherImport() {
+      const emptyBox = document.getElementById("teacherEmptyBox");
+      const progressBox = document.getElementById("teacherImportProgress");
+      const previewBox = document.getElementById("teacherPreviewContainer");
+      const stepText = document.getElementById("teacherProgressStep");
+      const pctText = document.getElementById("teacherProgressPct");
+      const bar = document.getElementById("teacherProgressBar");
+
+      emptyBox.classList.add("hidden");
+      previewBox.classList.add("hidden");
+      progressBox.classList.remove("hidden");
+
+      bar.style.width = "30%";
+      pctText.innerText = "30%";
+      stepText.innerText = "📂 MEBBİS Öğretmen Kadrosu Excel çıktısı okunuyor...";
+
+      setTimeout(() => {
+        bar.style.width = "75%";
+        pctText.innerText = "75%";
+        stepText.innerText = "👥 Branşlar kategorize ediliyor ve sınav dersleriyle eşleştiriliyor...";
+      }, 600);
+
+      setTimeout(() => {
+        bar.style.width = "100%";
+        pctText.innerText = "100%";
+        stepText.innerText = "✅ 12 Öğretmen Kadrosu Hazır!";
+
+        setTimeout(() => {
+          progressBox.classList.add("hidden");
+          previewBox.classList.remove("hidden");
+          renderTeacherImportPreview();
+        }, 400);
+      }, 1200);
+    }
+
+    function renderTeacherImportPreview() {
+      const tbody = document.getElementById("teacherParsedPreviewTbody");
+      tbody.innerHTML = "";
+      sampleMebbisTeacherParsedData.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="p-3 font-bold text-white">${item.ad}</td>
+          <td class="p-3 text-indigo-400 font-semibold">${item.brans}</td>
+          <td class="p-3 text-slate-300 font-medium">${item.kota}</td>
+          <td class="p-3 text-right"><span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px] font-medium">${item.eslesenDers}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function applyImportedTeachersToDemo() {
+      const badge = document.getElementById("teacherCountBadge");
+      if (badge) badge.innerText = teachers.length;
+      alert(`🎉 MEBBİS Öğretmen Kadrosu aktarımı simüle edildi!\nÖğretmenler branşlarına göre otomatik komisyon dağıtım havuzuna bağlandı.`);
+    }
+
+    function openPurchaseModal() {
+      const modal = document.getElementById("purchaseModal");
+      if (modal) modal.classList.remove("hidden");
+    }
+
+    function closePurchaseModal() {
+      const modal = document.getElementById("purchaseModal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderExams();
+      renderTeachers();
+      renderStudents();
+    });
+  </script>
+</body>
+</html>

@@ -210,11 +210,32 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     column-gap: 16px;
     width: 100%;
+    max-width: 100%;
   }
 
   .teblig-copy {
     min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
     padding: 8px;
+    box-sizing: border-box;
+  }
+
+  .teblig-duty-table {
+    table-layout: fixed !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 8.5px;
+    line-height: 1.2;
+    border-collapse: collapse;
+  }
+
+  .teblig-duty-table th,
+  .teblig-duty-table td {
+    padding: 3px 2px !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    hyphens: auto;
   }
 
   .teblig-cut-line {
@@ -308,15 +329,17 @@
   }
 
   .teblig-duty-table {
-    table-layout: fixed;
-    font-size: 6pt !important;
+    table-layout: fixed !important;
+    width: 100% !important;
+    font-size: 6.5pt !important;
     line-height: 1.15;
   }
 
   .teblig-duty-table th,
   .teblig-duty-table td {
-    padding: 1.2mm 0.7mm !important;
+    padding: 1.2mm 0.5mm !important;
     overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .teblig-signatures {

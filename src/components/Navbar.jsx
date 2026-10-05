@@ -6,7 +6,8 @@ import {
   Sun,
   AlertTriangle,
   Printer,
-  Sparkles
+  Sparkles,
+  BookOpen
 } from 'lucide-react';
 import Status3DOrb from './3d/Status3DOrb';
 
@@ -133,6 +134,18 @@ export default function Navbar() {
             >
               <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Otomatik Dağıt</span>
+            </button>
+
+            {/* User Guide Button */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('guide')}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-sky-50/80 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 text-xs font-semibold border border-sky-200/60 dark:border-sky-800/40 transition-all duration-200 active:scale-95 backdrop-blur-sm"
+              title="Kullanım Kılavuzu & Mevzuat Rehberi"
+              aria-label="Kullanım Kılavuzunu Aç"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-sky-500" aria-hidden="true" />
+              <span className="hidden md:inline">Kılavuz</span>
             </button>
 
             {/* Print Quick Access */}

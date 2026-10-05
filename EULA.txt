@@ -1,0 +1,58 @@
+﻿MEB SORUMLULUK SINAVLARI YONETIM SISTEMI
+SON KULLANICI LISANS SOZLESMESI (EULA)
+Surüm: 1.0 | Tarih: 2026
+
+DİKKAT: BU YAZILIMI KURMADAN VEYA KULLANMADAN ONCE BU SOZLESMEYI DIKKATLICE OKUYUN.
+YAZILIMI KURARAK, YÜKLEYEREK VEYA KULLANARAK BU SOZLESMENIN TÜM MADDELERINI
+KABUL ETMIS OLURSUNUZ.
+
+---
+
+MADDE 1 — LİSANS HAKKI
+Satici, size bu yazilimi TEK BIR BILGISAYAR üzerinde kullanmak üzere kisisel,
+devredilemez, alt-lisans verilemez, sinirli bir lisans hakkı tanımaktadır.
+
+MADDE 2 — YASAK EYLEMLER
+Asagidaki eylemler kesinlikle yasaktır ve hukuki sonuclar dogurar:
+a) Yazilimı kopyalamak, coğaltmak veya ticari amacla dagıtmak.
+b) Yazilımın kaynak kodunu tersine mühendislik (reverse engineering) yöntemiyle
+   incelemeye calismak.
+c) Lisans anahtarını baska kisi veya kurumlarla paylasmak.
+d) Lisans dogrulama mekanizmasını atlatmaya calismak.
+e) Yazilimi kiralama, ödünç verme veya sunucu üzerinde coklu kullanicıya sunma.
+
+MADDE 3 — KISISEL VERİLERİN KORUNMASI (KVKK)
+Bu yazilim, 6698 sayılı Kisisel Verilerin Korunması Kanunu (KVKK) cercevesinde
+tasarlanmıstır:
+- Tüm kisisel veriler (ogrenci ve öğretmen bilgileri) yalnızca KULLANICININ
+  kendi bilgisayarında yerel olarak saklanır.
+- Yazilım hicbir veriye internet üzerinden erisemez; hicbir sunucuya veri
+  aktarmaz.
+- VERI SORUMLUSU yazilimi kullanan okul yönetimidir, yazilim gelistiricisi degil.
+- Kullanicı, islenecek kisisel veriler için ilgili kisi haklarını (KVKK Md.11)
+  uygulama ici araçlarla kullanabilir.
+
+MADDE 4 — MÜLKIYET HAKLARI
+Yazilim ve tüm fikri mülkiyet hakları satıcıya aittir. Bu sozlesme size yalnizca
+kullanim hakkı vermektedir; mülkiyet hakkı devri söz konusu degildir.
+
+MADDE 5 — SINIRLI GARANTİ
+Yazilim "OLDUGU GİBİ" (AS-IS) sunulmaktadir. Satici, yazilimin kesintisiz veya
+hatasız calıscağına dair hicbir garanti vermemektedir. Kullanıcı, yazilımı
+kullanımından doğacak tüm riskleri üstlenmektedir.
+
+MADDE 6 — SORUMLULUK SINIRLAMASI
+Satıcı, yazilımın kullanımından kaynaklanan dogrudan veya dolayli hicbir zarardan
+(veri kaybi, is kaybi vb.) sorumlu tutulamaz.
+
+MADDE 7 — SOZLESMENIN SONA ERMESİ
+Kullanıcı bu sozlesmenin herhangi bir maddesini ihlal etmesi halinde lisans
+hakları derhal sona erer ve yazilımı kaldırmakla yükümlüdür.
+
+MADDE 8 — UYGULANACAK HUKUK
+Bu sozlesme Türkiye Cumhuriyeti hukuku cercevesinde yorumlanır. Anlazmazlıklarda
+satıcının bulundugu yerin mahkemeleri yetkilidir.
+
+---
+
+Bu sozlesmeyi kabul etmiyorsaniz yazilımı kurmayın ve kaldırın.

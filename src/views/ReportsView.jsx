@@ -1172,11 +1172,10 @@ export default function ReportsView() {
       return;
     }
 
-    const printWindow = window.open('about:blank', '_blank');
-    if (!printWindow) {
-      showToast('PDF açılmadı. Lütfen bu site için açılır pencerelere izin verip tekrar deneyin.', 'error');
-      return;
-    }
+    let printWindow = null;
+    try {
+      printWindow = window.open('about:blank', '_blank');
+    } catch (_) {}
 
     setPreparingGradeReport(subject);
     try {
@@ -1204,12 +1203,28 @@ export default function ReportsView() {
         foreignTemplateBytes,
         speakingTemplateBytes
       });
-      const pdfUrl = URL.createObjectURL(new Blob([report.bytes], { type: 'application/pdf' }));
-      printWindow.location.replace(pdfUrl);
+      const blob = new Blob([report.bytes], { type: 'application/pdf' });
+      const pdfUrl = URL.createObjectURL(blob);
+
+      if (printWindow && !printWindow.closed) {
+        printWindow.location.replace(pdfUrl);
+      } else {
+        // Doğrudan indirme / tarayıcıda açma desteği
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.target = '_blank';
+        link.download = `${title.replace(/\s+/g, '_')}_Uygulama_Notu_Cizelgesi.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
       window.setTimeout(() => URL.revokeObjectURL(pdfUrl), 5 * 60 * 1000);
-      showToast(`${subjectExams.length} oturum için ${title} PDF'si yazdırmaya hazırlandı.`);
+      showToast(`${subjectExams.length} oturum için ${title} PDF'si hazırlandı.`);
     } catch (error) {
-      printWindow.close();
+      if (printWindow && !printWindow.closed) {
+        try { printWindow.close(); } catch (_) {}
+      }
       console.error('Dil dersi uygulama notu yazdırma raporu oluşturulamadı:', error);
       showToast(
         error instanceof Error ? error.message : 'Yazdırma raporu oluşturulamadı.',
@@ -2230,6 +2245,16 @@ export default function ReportsView() {
                         </p>
                       </div>
                       <table className="teblig-duty-table w-full border-collapse border border-black">
+                        <colgroup>
+                          <col style={{ width: '5%' }} />
+                          <col style={{ width: '12%' }} />
+                          <col style={{ width: '8%' }} />
+                          <col style={{ width: '28%' }} />
+                          <col style={{ width: '9%' }} />
+                          <col style={{ width: '10%' }} />
+                          <col style={{ width: '9%' }} />
+                          <col style={{ width: '19%' }} />
+                        </colgroup>
                         <thead>
                           <tr className="bg-slate-100">
                             {['S.No', 'Tarih', 'Saat', 'Ders', 'Seviye', 'Yer', 'Görevi', 'Diğer Görevliler'].map((h) => (

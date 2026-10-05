@@ -1,0 +1,16 @@
+node_modules
+.venv
+.git
+.vscode
+dist
+release
+electron
+sablon
+tools
+_arsiv
+web-demo
+*.exe
+*.bat
+*.doc
+*.XLS
+*.zip

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
@@ -13,11 +13,19 @@ import SchoolSettingsView from './views/SchoolSettingsView';
 import BackupView from './views/BackupView';
 import CommissionEditView from './views/CommissionEditView';
 import CourseBranchMappingView from './views/CourseBranchMappingView';
+import UserGuideView from './views/UserGuideView';
 import { CheckCircle2, AlertCircle, Info } from 'lucide-react';
 import { animateViewTransition, animateToastEntrance } from './utils/animeEffects';
+import UpdateNotifier from './components/UpdateNotifier';
+import OnboardingWizard, { hasCompletedOnboarding } from './components/OnboardingWizard';
+import OnlineUpdateModal from './components/modals/OnlineUpdateModal';
+import { checkOnlineUpdate } from './utils/updateChecker';
 
 function MainLayout() {
-  const { activeTab, toastMessage } = useApp();
+  const { activeTab, setActiveTab, toastMessage } = useApp();
+  const [showOnboarding, setShowOnboarding] = useState(() => !hasCompletedOnboarding());
+  const [onlineUpdateInfo, setOnlineUpdateInfo] = useState(null);
+  const [showOnlineUpdateModal, setShowOnlineUpdateModal] = useState(false);
   const mainRef = useRef(null);
   const toastRef = useRef(null);
 
@@ -32,6 +40,35 @@ function MainLayout() {
       animateToastEntrance(toastRef.current);
     }
   }, [toastMessage]);
+
+  // Supabase Online Guncelleme Kontrolu (Arka planda ve Manuel)
+  useEffect(() => {
+    // 3.5 saniye sonra sessiz kontrol
+    const timer = setTimeout(async () => {
+      try {
+        const res = await checkOnlineUpdate();
+        if (res && res.hasUpdate) {
+          setOnlineUpdateInfo(res);
+          setShowOnlineUpdateModal(true);
+        }
+      } catch (_) {}
+    }, 3500);
+
+    // Manuel kontrol olayi dinleyici
+    const handleManualCheck = async () => {
+      try {
+        const res = await checkOnlineUpdate();
+        setOnlineUpdateInfo(res);
+        setShowOnlineUpdateModal(true);
+      } catch (_) {}
+    };
+
+    window.addEventListener("check-app-update", handleManualCheck);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("check-app-update", handleManualCheck);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col w-full overflow-x-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -53,6 +90,7 @@ function MainLayout() {
         Ana İçeriğe Atla
       </a>
 
+      <UpdateNotifier />
       <Navbar />
 
       <div className="relative z-10 flex-1 max-w-7xl w-full mx-auto flex">
@@ -75,8 +113,32 @@ function MainLayout() {
           {activeTab === 'reports' && <ReportsView />}
           {activeTab === 'settings' && <SchoolSettingsView />}
           {activeTab === 'backup' && <BackupView />}
+          {activeTab === 'guide' && (
+            <UserGuideView onRelaunchTour={() => setShowOnboarding(true)} />
+          )}
         </main>
       </div>
+
+      {/* Onboarding Wizard / İlk Açılış Rehberi */}
+      <OnboardingWizard
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onOpenGuide={() => {
+          setShowOnboarding(false);
+          setActiveTab('guide');
+        }}
+        onNavigateTab={(tab) => {
+          setShowOnboarding(false);
+          setActiveTab(tab);
+        }}
+      />
+
+      {/* Supabase Tabanli Online Guncelleme Penceresi */}
+      <OnlineUpdateModal
+        isOpen={showOnlineUpdateModal}
+        onClose={() => setShowOnlineUpdateModal(false)}
+        updateInfo={onlineUpdateInfo}
+      />
 
       {/* Floating Toast Notification */}
       {toastMessage && (

@@ -3,6 +3,7 @@ node_modules/
 dist/
 .venv/
 graphify-out/
+_arsiv/
 
 # Local environment and editor state
 .env
@@ -41,3 +42,11 @@ sablon/rendered/
 sablon/*.pdf
 !sablon/konusmadinleme.pdf
 !sablon/yabancınot.pdf
+
+# Lisans uretici ve dagitilanlar
+release/
+tools/
+*.lic
+
+.vercel
+.env*

@@ -89,7 +89,8 @@ export function AppProvider({ children }) {
     'commission',
     'reports',
     'settings',
-    'backup'
+    'backup',
+    'guide'
   ];
 
   const [sidebarReorderEnabled, setSidebarReorderEnabledState] = useState(() => {

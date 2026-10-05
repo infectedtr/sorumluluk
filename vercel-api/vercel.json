@@ -1,0 +1,9 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/((?!.*\\.mp4$).*)",
+      "destination": "/api/index.js"
+    }
+  ]
+}

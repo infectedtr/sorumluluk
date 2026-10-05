@@ -1,0 +1,9 @@
+{
+  "name": "meb-sorumluluk-webhook",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "main": "api/index.js",
+  "dependencies": {
+    "nodemailer": "^6.9.10"
+  }
+}
