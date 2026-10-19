@@ -1,0 +1,34 @@
+name: Supabase & Worker Keep-Alive
+
+on:
+  schedule:
+    # Her 6 saatte bir (günde 4 defa) otomatik sorgu atar
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Actions sekmesinden elle 'Run workflow' ile hemen çalıştırma imkanı
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Aidat & Disiplin Supabase Canlı Tut
+        run: |
+          echo "Pinging Aidat/Disiplin Supabase..."
+          curl -s -f -X GET "https://wzvwzckrcnanxftrkmcb.supabase.co/rest/v1/licenses?select=id&limit=1" \
+            -H "apikey: sb_publishable_PvGtCc-PmH61n7M44olKJQ_odt2Nl5C" \
+            -H "Authorization: Bearer sb_publishable_PvGtCc-PmH61n7M44olKJQ_odt2Nl5C"
+
+      - name: 2. Sorumluluk Supabase Canlı Tut
+        run: |
+          echo "Pinging Sorumluluk Supabase..."
+          curl -s -f -X GET "https://qwjluzeabyxvlzkfscox.supabase.co/rest/v1/licenses?select=id&limit=1" \
+            -H "apikey: sb_publishable_hdmU_P82-KMGCEB3fV1qBw_9M56K6JR" \
+            -H "Authorization: Bearer sb_publishable_hdmU_P82-KMGCEB3fV1qBw_9M56K6JR"
+
+      - name: 3. Cloudflare Worker Uç Noktalarını Kontrol Et
+        run: |
+          echo "Pinging Cloudflare Workers..."
+          curl -s "https://mebai.sgkadayifci.workers.dev/rest/v1/licenses?select=count" \
+            -H "apikey: sb_publishable_PvGtCc-PmH61n7M44olKJQ_odt2Nl5C"
+          curl -s "https://mebaisorumluluk.sgkadayifci.workers.dev/rest/v1/licenses?select=count" \
+            -H "apikey: sb_publishable_hdmU_P82-KMGCEB3fV1qBw_9M56K6JR"
+          echo "Tüm keep-alive pingleri başarıyla tamamlandı!"
